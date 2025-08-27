@@ -24,7 +24,7 @@ interface ClientData {
 
 export default function EntrenadorPage() {
   const [clients, setClients] = useState<ClientData[]>([]);
-  const [selectedClient, setSelectedClient] = useState<string>('');
+  // const [selectedClient, setSelectedClient] = useState<string>(''); // Unused for now
   const [trainerCode, setTrainerCode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
@@ -102,7 +102,7 @@ export default function EntrenadorPage() {
     let recentCompliance = { P: 0, C: 0, G: 0, V: 0 };
     
     // Buscar datos de los últimos 7 días
-    const recentData: any[] = [];
+    const recentData: Array<{P: number; C: number; G: number; V: number}> = [];
     const today = new Date();
     
     for (let i = 0; i < 30; i++) {
@@ -124,9 +124,9 @@ export default function EntrenadorPage() {
             const portions = JSON.parse(portionsData);
             const goals = JSON.parse(localStorage.getItem(`daily-goals-${userCode}`) || '{"P":5,"C":5,"G":5,"V":5}');
             
-            const totalP = Object.values(portions.P).reduce((sum: number, val: any) => sum + val, 0);
-            const totalC = Object.values(portions.C).reduce((sum: number, val: any) => sum + val, 0);
-            const totalG = Object.values(portions.G).reduce((sum: number, val: any) => sum + val, 0);
+            const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
             const totalV = portions.V || 0;
             
             recentData.push({

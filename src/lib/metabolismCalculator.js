@@ -258,7 +258,7 @@ export function calculatePNPortions(user) {
 }
 
 // Función legacy para compatibilidad
-export function calculateHandPortions(user, targetCalories) {
+export function calculateHandPortions(user) {
   // Usar el nuevo algoritmo inteligente con preferencias normales
   const smartPortions = calculateSmartPortions(user, {});
   

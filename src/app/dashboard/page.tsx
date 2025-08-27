@@ -30,7 +30,7 @@ interface NutritionResult {
       V: [number, number];
     };
   };
-  mealDistribution: any;
+  mealDistribution: unknown;
 }
 
 export default function Dashboard() {
@@ -62,7 +62,7 @@ export default function Dashboard() {
     setLoading(true);
 
     try {
-      const nutrition = calculatePersonalizedNutrition(userData as any);
+      const nutrition = calculatePersonalizedNutrition(userData as Required<UserData>);
       setResult(nutrition);
       
       // Obtener código de usuario activo

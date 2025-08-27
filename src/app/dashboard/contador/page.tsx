@@ -90,12 +90,12 @@ export default function ContadorPorciones() {
       
       // Calcular objetivos basados en el perfil del usuario
       try {
-        const calculatedPortions = calculatePNPortions(profile);
+        const calculatedPortions = calculatePNPortions(profile) as any;
         const calculatedGoals = {
-          P: calculatedPortions.P,
-          C: calculatedPortions.C,
-          G: calculatedPortions.G,
-          V: calculatedPortions.V
+          P: calculatedPortions.P || 5,
+          C: calculatedPortions.C || 5,
+          G: calculatedPortions.G || 5,
+          V: calculatedPortions.V || 5
         };
         
         // Si hay objetivos personalizados guardados, usar esos
@@ -515,7 +515,7 @@ export default function ContadorPorciones() {
                 </span>
               ) : qualityPercentages.comerMas >= 50 ? (
                 <span className="text-yellow-700 font-medium">
-                  👍 Buen trabajo. Trata de aumentar los alimentos "Comer Más" (P1, C1, G1).
+                  👍 Buen trabajo. Trata de aumentar los alimentos &quot;Comer Más&quot; (P1, C1, G1).
                 </span>
               ) : (
                 <span className="text-red-700 font-medium">

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { calculatePNPortions } from '@/lib/metabolismCalculator';
+// import { calculatePNPortions } from '@/lib/metabolismCalculator';
 
 interface DailyReport {
   date: string;
@@ -102,9 +102,9 @@ export default function ReportesPage() {
         const goals = goalsData ? JSON.parse(goalsData) : { P: 5, C: 5, G: 5, V: 5 };
         
         // Calcular totales consumidos
-        const totalP = Object.values(portions.P).reduce((sum: number, val: any) => sum + val, 0);
-        const totalC = Object.values(portions.C).reduce((sum: number, val: any) => sum + val, 0);
-        const totalG = Object.values(portions.G).reduce((sum: number, val: any) => sum + val, 0);
+        const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+        const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+        const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
         const totalV = portions.V || 0;
         
         // Calcular compliance (% del objetivo alcanzado)
@@ -226,11 +226,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
     try {
       // Simular envío de email
       // En una implementación real, aquí llamarías a tu API
-      const reportData = {
-        to: coachEmail,
-        subject: `Reporte Nutricional - ${userProfile.name}`,
-        body: generateReportText()
-      };
+      console.log('Sending report to:', coachEmail, 'for:', userProfile.name);
       
       // Por ahora, simplemente copiar al clipboard
       await navigator.clipboard.writeText(generateReportText());
