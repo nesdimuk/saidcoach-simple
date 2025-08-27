@@ -378,37 +378,37 @@ export default function ContadorPorciones() {
             </div>
           )}
           
-          <div className="grid grid-cols-5 gap-4">
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getProgressColor(getTotalPortions('P'), dailyGoals.P)}`}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+            <div className="text-center py-2">
+              <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(getTotalPortions('P'), dailyGoals.P)}`}>
                 {getTotalPortions('P') % 1 === 0 ? getTotalPortions('P') : getTotalPortions('P').toFixed(1)}/{dailyGoals.P}
               </div>
-              <div className="text-sm text-gray-600">Proteína</div>
+              <div className="text-sm text-gray-700">Proteína</div>
             </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getProgressColor(getTotalPortions('C'), dailyGoals.C)}`}>
+            <div className="text-center py-2">
+              <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(getTotalPortions('C'), dailyGoals.C)}`}>
                 {getTotalPortions('C') % 1 === 0 ? getTotalPortions('C') : getTotalPortions('C').toFixed(1)}/{dailyGoals.C}
               </div>
-              <div className="text-sm text-gray-600">Carbohidratos</div>
+              <div className="text-xs sm:text-sm text-gray-700">Carbohidratos</div>
             </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getProgressColor(getTotalPortions('G'), dailyGoals.G)}`}>
+            <div className="text-center py-2">
+              <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(getTotalPortions('G'), dailyGoals.G)}`}>
                 {getTotalPortions('G') % 1 === 0 ? getTotalPortions('G') : getTotalPortions('G').toFixed(1)}/{dailyGoals.G}
               </div>
-              <div className="text-sm text-gray-600">Grasas</div>
+              <div className="text-sm text-gray-700">Grasas</div>
             </div>
-            <div className="text-center">
-              <div className={`text-2xl font-bold ${getProgressColor(portionCount.V, dailyGoals.V)}`}>
+            <div className="text-center py-2">
+              <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(portionCount.V, dailyGoals.V)}`}>
                 {portionCount.V % 1 === 0 ? portionCount.V : portionCount.V.toFixed(1)}/{dailyGoals.V}
               </div>
-              <div className="text-sm text-gray-600">Verduras</div>
+              <div className="text-sm text-gray-700">Verduras</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600">
+            <div className="text-center py-2">
+              <div className="text-xl sm:text-2xl font-bold text-indigo-600">
                 {dailyWeight ? `${dailyWeight.weight} kg` : '- kg'}
               </div>
               <div className="text-sm text-gray-600">
-                Peso Hoy
+                <span className="hidden sm:inline">Peso Hoy</span><span className="sm:hidden">Peso</span>
                 <button
                   onClick={handleEditWeight}
                   className="ml-1 text-blue-600 hover:text-blue-800 text-xs"
@@ -461,7 +461,7 @@ export default function ContadorPorciones() {
 
           {/* Leyenda y estadísticas */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
+            <div className="text-center py-2">
               <div className="flex items-center justify-center mb-2">
                 <div className="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
                 <span className="text-sm font-medium">Comer Más</span>
@@ -474,7 +474,7 @@ export default function ContadorPorciones() {
               </div>
             </div>
             
-            <div className="text-center">
+            <div className="text-center py-2">
               <div className="flex items-center justify-center mb-2">
                 <div className="w-4 h-4 bg-yellow-500 rounded-full mr-2"></div>
                 <span className="text-sm font-medium">Comer Ocasionalmente</span>
@@ -487,7 +487,7 @@ export default function ContadorPorciones() {
               </div>
             </div>
             
-            <div className="text-center">
+            <div className="text-center py-2">
               <div className="flex items-center justify-center mb-2">
                 <div className="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
                 <span className="text-sm font-medium">Comer Menos</span>
