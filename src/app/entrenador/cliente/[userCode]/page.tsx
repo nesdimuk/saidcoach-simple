@@ -101,9 +101,9 @@ export default function ClientDetailPage() {
   };
 
   const getComplianceColor = (percentage: number) => {
-    if (percentage >= 90) return 'text-green-600 bg-green-50';
-    if (percentage >= 70) return 'text-yellow-600 bg-yellow-50';
-    return 'text-red-600 bg-red-50';
+    if (percentage >= 90) return 'text-green-800 bg-green-100';
+    if (percentage >= 70) return 'text-yellow-800 bg-yellow-100';
+    return 'text-red-800 bg-red-100';
   };
 
   const calculateAverages = () => {

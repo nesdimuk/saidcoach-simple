@@ -267,16 +267,16 @@ export default function Dashboard() {
               <div className="space-y-6">
                 {/* Métricas principales */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-50 p-4 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-blue-600">{result.tmb}</div>
+                  <div className="bg-blue-100 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-blue-800">{result.tmb}</div>
                     <div className="text-sm text-gray-600">TMB (cal/día)</div>
                   </div>
-                  <div className="bg-green-50 p-4 rounded-lg text-center">
-                    <div className="text-2xl font-bold text-green-600">{result.tdee}</div>
+                  <div className="bg-green-100 p-4 rounded-lg text-center">
+                    <div className="text-2xl font-bold text-green-800">{result.tdee}</div>
                     <div className="text-sm text-gray-600">TDEE (cal/día)</div>
                   </div>
-                  <div className="bg-orange-50 p-4 rounded-lg text-center col-span-2">
-                    <div className="text-3xl font-bold text-orange-600">{result.targetCalories}</div>
+                  <div className="bg-orange-100 p-4 rounded-lg text-center col-span-2">
+                    <div className="text-3xl font-bold text-orange-800">{result.targetCalories}</div>
                     <div className="text-sm text-gray-600">Calorías Objetivo</div>
                   </div>
                 </div>
@@ -285,26 +285,26 @@ export default function Dashboard() {
                 <div>
                   <h3 className="text-lg font-semibold mb-3">Porciones Diarias (Método de la Mano)</h3>
                   <div className="grid grid-cols-4 gap-3">
-                    <div className="text-center p-3 bg-red-50 rounded-lg">
-                      <div className="text-xl font-bold text-red-600">
+                    <div className="text-center p-3 bg-red-100 rounded-lg">
+                      <div className="text-xl font-bold text-red-800">
                         {result.dailyPortions.P}
                       </div>
                       <div className="text-xs text-gray-600">Proteína<br/>(palmas)</div>
                     </div>
-                    <div className="text-center p-3 bg-yellow-50 rounded-lg">
-                      <div className="text-xl font-bold text-yellow-600">
+                    <div className="text-center p-3 bg-yellow-100 rounded-lg">
+                      <div className="text-xl font-bold text-yellow-800">
                         {result.dailyPortions.C}
                       </div>
                       <div className="text-xs text-gray-600">Carbohidratos<br/>(puños)</div>
                     </div>
-                    <div className="text-center p-3 bg-purple-50 rounded-lg">
-                      <div className="text-xl font-bold text-purple-600">
+                    <div className="text-center p-3 bg-purple-100 rounded-lg">
+                      <div className="text-xl font-bold text-purple-800">
                         {result.dailyPortions.G}
                       </div>
                       <div className="text-xs text-gray-600">Grasas<br/>(pulgares)</div>
                     </div>
-                    <div className="text-center p-3 bg-green-50 rounded-lg">
-                      <div className="text-xl font-bold text-green-600">
+                    <div className="text-center p-3 bg-green-100 rounded-lg">
+                      <div className="text-xl font-bold text-green-800">
                         {result.dailyPortions.V}
                       </div>
                       <div className="text-xs text-gray-600">Verduras<br/>(puños)</div>
