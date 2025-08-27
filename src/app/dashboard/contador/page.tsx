@@ -370,8 +370,8 @@ export default function ContadorPorciones() {
           </div>
           
           {userProfile && (
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-              <div className="text-sm text-gray-600">
+            <div className="mb-4 p-3 bg-gray-100 rounded-lg">
+              <div className="text-sm text-gray-800">
                 Calculado para: <strong>{userProfile.name}</strong> - {userProfile.gender === 'MALE' ? 'Hombre' : 'Mujer'}, 
                 {' '}{userProfile.goal === 'WEIGHT_LOSS' ? 'Pérdida de peso' : userProfile.goal === 'MAINTENANCE' ? 'Mantenimiento' : 'Ganancia muscular'}, 
                 {' '}{userProfile.activity === 'SEDENTARY' ? 'sedentario' : 
@@ -436,7 +436,7 @@ export default function ContadorPorciones() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">Calidad de alimentos consumidos</span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-700">
                 {getTotalPortions('P') + getTotalPortions('C') + getTotalPortions('G')} porciones totales
               </span>
             </div>
@@ -474,7 +474,7 @@ export default function ContadorPorciones() {
               <div className="text-2xl font-bold text-green-600">
                 {qualityPercentages.comerMas}%
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-700 mt-1">
                 P1: {portionCount.P.P1} | C1: {portionCount.C.C1} | G1: {portionCount.G.G1}
               </div>
             </div>
@@ -487,7 +487,7 @@ export default function ContadorPorciones() {
               <div className="text-2xl font-bold text-yellow-600">
                 {qualityPercentages.comerOcasionalmente}%
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-700 mt-1">
                 P2: {portionCount.P.P2} | C2: {portionCount.C.C2} | G2: {portionCount.G.G2}
               </div>
             </div>
@@ -500,15 +500,15 @@ export default function ContadorPorciones() {
               <div className="text-2xl font-bold text-red-600">
                 {qualityPercentages.comerMenos}%
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-gray-700 mt-1">
                 P3: {portionCount.P.P3} | C3: {portionCount.C.C3} | G3: {portionCount.G.G3}
               </div>
             </div>
           </div>
 
           {/* Mensaje motivacional */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-700">
+          <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+            <div className="text-sm text-gray-800">
               {qualityPercentages.comerMas >= 70 ? (
                 <span className="text-green-700 font-medium">
                   🎉 ¡Excelente! Más del 70% de tus alimentos son de alta calidad.
@@ -766,7 +766,7 @@ export default function ContadorPorciones() {
                   />
                 </div>
                 
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-gray-700">
                   💡 Tip: Pésate en ayunas, sin ropa, después de ir al baño
                 </div>
               </div>

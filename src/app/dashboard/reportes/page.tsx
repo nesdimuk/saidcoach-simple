@@ -311,7 +311,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">Reportes para Coach</h1>
-          <p className="text-gray-600">Comparte tu progreso nutricional con tu coach</p>
+          <p className="text-gray-700">Comparte tu progreso nutricional con tu coach</p>
         </div>
 
         {userProfile && (
@@ -372,7 +372,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
                 const avgComerMenos = Math.round(avgQuality.reduce((sum, r) => sum + r.quality!.comerMenos, 0) / avgQuality.length);
 
                 return (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                  <div className="mb-6 p-4 bg-gray-100 rounded-lg">
                     <h3 className="text-lg font-semibold mb-3">Calidad Nutricional Promedio</h3>
                     
                     {/* Barra de progreso tricolor */}

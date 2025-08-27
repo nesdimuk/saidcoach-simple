@@ -129,7 +129,7 @@ export default function ClientDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Cargando datos del cliente...</p>
+          <p className="text-gray-700">Cargando datos del cliente...</p>
         </div>
       </div>
     );
@@ -148,7 +148,7 @@ export default function ClientDetailPage() {
               ← Volver al Panel
             </button>
             <h1 className="text-4xl font-bold text-gray-800 mb-2">{userProfile.name}</h1>
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               {userProfile.gender === 'MALE' ? 'Hombre' : 'Mujer'} • 
               {userProfile.goal === 'WEIGHT_LOSS' ? ' Pérdida de peso' : 
                userProfile.goal === 'MAINTENANCE' ? ' Mantenimiento' : ' Ganancia muscular'} • 
@@ -164,31 +164,31 @@ export default function ClientDetailPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className="text-2xl font-bold text-gray-800">{reports.length}</div>
-            <div className="text-sm text-gray-600">Días registrados</div>
+            <div className="text-sm text-gray-700">Días registrados</div>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className={`text-2xl font-bold ${getComplianceColor(averages.compliance.P)}`}>
               {averages.compliance.P}%
             </div>
-            <div className="text-sm text-gray-600">Proteína promedio</div>
+            <div className="text-sm text-gray-700">Proteína promedio</div>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className={`text-2xl font-bold ${getComplianceColor(averages.compliance.C)}`}>
               {averages.compliance.C}%
             </div>
-            <div className="text-sm text-gray-600">Carbos promedio</div>
+            <div className="text-sm text-gray-700">Carbos promedio</div>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className={`text-2xl font-bold ${getComplianceColor(averages.compliance.G)}`}>
               {averages.compliance.G}%
             </div>
-            <div className="text-sm text-gray-600">Grasas promedio</div>
+            <div className="text-sm text-gray-700">Grasas promedio</div>
           </div>
           <div className="bg-white rounded-lg shadow p-4 text-center">
             <div className="text-2xl font-bold text-indigo-600">
               {averages.weightChange > 0 ? '+' : ''}{averages.weightChange.toFixed(1)} kg
             </div>
-            <div className="text-sm text-gray-600">Cambio de peso</div>
+            <div className="text-sm text-gray-700">Cambio de peso</div>
           </div>
         </div>
 
@@ -280,7 +280,7 @@ export default function ClientDetailPage() {
 
         {reports.length === 0 && (
           <div className="bg-white rounded-lg shadow p-8 text-center">
-            <p className="text-gray-500">Este cliente no tiene datos registrados aún.</p>
+            <p className="text-gray-700">Este cliente no tiene datos registrados aún.</p>
           </div>
         )}
       </div>
