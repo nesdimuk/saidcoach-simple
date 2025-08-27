@@ -185,56 +185,51 @@ export default function ContadorPorciones() {
     count: number, 
     icon: string 
   }) => (
-    <div className="flex flex-col items-center space-y-2 p-3 bg-gray-50 rounded-lg">
+    <div className="flex flex-col items-center space-y-3 p-3 bg-gray-100 rounded-lg">
+      {/* Ícono principal - Click para +1 porción */}
       <div className="relative">
-        <Image 
-          src={`/icons/${icon}.png`} 
-          alt={icon}
-          width={40}
-          height={40}
-          className="w-10 h-10"
-        />
+        <button
+          onClick={() => addPortion(type, subtype, 1)}
+          className="hover:scale-105 transition-transform active:scale-95"
+        >
+          <Image 
+            src={`/icons/${icon}.png`} 
+            alt={icon}
+            width={50}
+            height={50}
+            className="w-12 h-12 cursor-pointer"
+          />
+        </button>
         {count > 0 && (
-          <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium">
             {count % 1 === 0 ? count : count.toFixed(1)}
           </div>
         )}
       </div>
       
-      <div className="flex flex-wrap justify-center gap-1 max-w-24">
-        <button
-          onClick={() => removePortion(type, subtype, 1)}
-          className="bg-red-500 text-white w-6 h-6 rounded-full text-xs hover:bg-red-600 transition-colors"
-          disabled={count === 0}
-        >
-          -1
-        </button>
-        
-        {(type === 'P' || type === 'C') && (
-          <button
-            onClick={() => removePortion(type, subtype, 0.5)}
-            className="bg-red-400 text-white w-8 h-6 rounded-full text-xs hover:bg-red-500 transition-colors"
-            disabled={count < 0.5}
-          >
-            -0.5
-          </button>
-        )}
-        
+      {/* Controles secundarios */}
+      <div className="flex items-center justify-center gap-2">
+        {/* Media porción (solo para P y C) */}
         {(type === 'P' || type === 'C') && (
           <button
             onClick={() => addPortion(type, subtype, 0.5)}
-            className="bg-green-400 text-white w-8 h-6 rounded-full text-xs hover:bg-green-500 transition-colors"
+            className="bg-green-100 hover:bg-green-200 text-green-700 px-2 py-1 rounded-md text-xs font-medium transition-colors"
+            title="Agregar media porción"
           >
             +0.5
           </button>
         )}
         
-        <button
-          onClick={() => addPortion(type, subtype, 1)}
-          className="bg-green-500 text-white w-6 h-6 rounded-full text-xs hover:bg-green-600 transition-colors"
-        >
-          +1
-        </button>
+        {/* Botón deshacer */}
+        {count > 0 && (
+          <button
+            onClick={() => removePortion(type, subtype, count >= 1 ? 1 : 0.5)}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1 rounded-md text-sm transition-colors"
+            title="Deshacer última acción"
+          >
+            ↶
+          </button>
+        )}
       </div>
     </div>
   );
