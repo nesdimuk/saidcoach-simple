@@ -47,57 +47,70 @@ export default function ClientDetailPage() {
     }
   }, [userCode, dateRange]);
 
-  const loadClientData = (clientCode: string) => {
-    // Cargar perfil del cliente
-    const profileData = localStorage.getItem(`user-profile-${clientCode}`);
-    if (profileData) {
-      setUserProfile(JSON.parse(profileData));
-    }
-
-    // Cargar reportes del cliente
-    const reportsData: DailyReport[] = [];
-    const today = new Date();
-    
-    for (let i = 0; i < dateRange; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const dateString = date.toDateString();
+  const loadClientData = async (clientCode: string) => {
+    try {
+      // Cargar perfil del cliente desde API
+      const profileResponse = await fetch(`/api/user-profile?userCode=${clientCode}`);
+      const profileData = await profileResponse.json();
       
-      const portionsData = localStorage.getItem(`portions-${clientCode}-${dateString}`);
-      const weightData = localStorage.getItem(`weight-${clientCode}-${dateString}`);
-      const goalsData = localStorage.getItem(`daily-goals-${clientCode}`) || 
-                       localStorage.getItem('daily-goals'); // fallback
-      
-      if (portionsData) {
-        const portions = JSON.parse(portionsData);
-        const weight = weightData ? JSON.parse(weightData).weight : undefined;
-        const goals = goalsData ? JSON.parse(goalsData) : { P: 5, C: 5, G: 5, V: 5 };
-        
-        // Calcular totales consumidos
-        const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-        const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-        const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-        const totalV = portions.V || 0;
-        
-        // Calcular compliance
-        const compliance = {
-          P: Math.round((totalP / goals.P) * 100),
-          C: Math.round((totalC / goals.C) * 100),
-          G: Math.round((totalG / goals.G) * 100),
-          V: Math.round((totalV / goals.V) * 100)
-        };
-        
-        reportsData.push({
-          date: dateString,
-          weight,
-          portions: { P: totalP, C: totalC, G: totalG, V: totalV },
-          goals,
-          compliance
-        });
+      if (profileData.profile) {
+        setUserProfile(profileData.profile);
+      } else {
+        console.log('No se encontró perfil para el cliente:', clientCode);
+        return;
       }
+
+      // Cargar reportes del cliente
+      const reportsData: DailyReport[] = [];
+      const today = new Date();
+      
+      for (let i = 0; i < dateRange; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateString = date.toDateString();
+        
+        try {
+          // Cargar datos de porciones desde API
+          const portionsResponse = await fetch(`/api/portions?userCode=${clientCode}&date=${encodeURIComponent(dateString)}`);
+          const portionsResult = await portionsResponse.json();
+          
+          if (portionsResult.portions) {
+            const portions = portionsResult.portions;
+            const weight = portionsResult.weight;
+            const goals = portionsResult.goals || { P: 5, C: 5, G: 5, V: 5 };
+            
+            // Calcular totales consumidos
+            const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalV = portions.V || 0;
+            
+            // Calcular compliance
+            const compliance = {
+              P: Math.round((totalP / goals.P) * 100),
+              C: Math.round((totalC / goals.C) * 100),
+              G: Math.round((totalG / goals.G) * 100),
+              V: Math.round((totalV / goals.V) * 100)
+            };
+            
+            reportsData.push({
+              date: dateString,
+              weight,
+              portions: { P: totalP, C: totalC, G: totalG, V: totalV },
+              goals,
+              compliance
+            });
+          }
+        } catch (error) {
+          console.log(`No hay datos para ${dateString}:`, error);
+        }
+      }
+      
+      setReports(reportsData);
+      
+    } catch (error) {
+      console.error('Error cargando datos del cliente:', error);
     }
-    
-    setReports(reportsData);
   };
 
   const getComplianceColor = (percentage: number) => {
