@@ -12,6 +12,12 @@ interface DailyReport {
     G: number;
     V: number;
   };
+  originalPortions?: {
+    P: { P1: number; P2: number; P3: number; };
+    C: { C1: number; C2: number; C3: number; };
+    G: { G1: number; G2: number; G3: number; };
+    V: number;
+  };
   goals: {
     P: number;
     C: number;
@@ -44,7 +50,7 @@ interface UserProfile {
   preference: string;
 }
 
-export default function ReportesPage() {
+export default function HistorialPage() {
   const [reports, setReports] = useState<DailyReport[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [dateRange, setDateRange] = useState(7); // días
@@ -136,6 +142,7 @@ export default function ReportesPage() {
           date: dateString,
           weight,
           portions: { P: totalP, C: totalC, G: totalG, V: totalV },
+          originalPortions: portions, // Preservar datos originales detallados
           goals,
           compliance,
           quality
@@ -247,7 +254,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
     setIsEditingDay(true);
   };
 
-  const handleSaveEditDay = () => {
+  const handleSaveEditDay = async () => {
     if (!editingReport || !userProfile) return;
 
     const activeUserCode = localStorage.getItem('active-user-code');
@@ -257,19 +264,66 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
     }
 
     try {
-      // Convertir las porciones editadas a formato completo
-      const fullPortions = {
-        P: { P1: editingPortions.P, P2: 0, P3: 0 },
-        C: { C1: editingPortions.C, C2: 0, C3: 0 },
-        G: { G1: editingPortions.G, G2: 0, G3: 0 },
-        V: editingPortions.V
-      };
+      // Usar los datos originales como base y solo actualizar los totales
+      let fullPortions;
+      
+      if (editingReport.originalPortions) {
+        // Si tenemos los datos originales detallados, usarlos como base
+        const original = editingReport.originalPortions;
+        const originalTotalP = original.P.P1 + original.P.P2 + original.P.P3;
+        const originalTotalC = original.C.C1 + original.C.C2 + original.C.C3;
+        const originalTotalG = original.G.G1 + original.G.G2 + original.G.G3;
+        
+        // Calcular factores de escala para mantener las proporciones
+        const scaleP = originalTotalP > 0 ? editingPortions.P / originalTotalP : 0;
+        const scaleC = originalTotalC > 0 ? editingPortions.C / originalTotalC : 0;
+        const scaleG = originalTotalG > 0 ? editingPortions.G / originalTotalG : 0;
+        
+        fullPortions = {
+          P: {
+            P1: Math.round(original.P.P1 * scaleP * 10) / 10,
+            P2: Math.round(original.P.P2 * scaleP * 10) / 10,
+            P3: Math.round(original.P.P3 * scaleP * 10) / 10
+          },
+          C: {
+            C1: Math.round(original.C.C1 * scaleC * 10) / 10,
+            C2: Math.round(original.C.C2 * scaleC * 10) / 10,
+            C3: Math.round(original.C.C3 * scaleC * 10) / 10
+          },
+          G: {
+            G1: Math.round(original.G.G1 * scaleG * 10) / 10,
+            G2: Math.round(original.G.G2 * scaleG * 10) / 10,
+            G3: Math.round(original.G.G3 * scaleG * 10) / 10
+          },
+          V: editingPortions.V
+        };
+      } else {
+        // Fallback: si no hay datos originales, poner todo en calidad 1
+        fullPortions = {
+          P: { P1: editingPortions.P, P2: 0, P3: 0 },
+          C: { C1: editingPortions.C, C2: 0, C3: 0 },
+          G: { G1: editingPortions.G, G2: 0, G3: 0 },
+          V: editingPortions.V
+        };
+      }
 
-      // Guardar porciones
+      // Guardar porciones en localStorage
       localStorage.setItem(
         `portions-${activeUserCode}-${editingReport.date}`, 
         JSON.stringify(fullPortions)
       );
+
+      // Guardar porciones en la base de datos (Redis)
+      await fetch('/api/portions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userCode: activeUserCode,
+          date: editingReport.date,
+          portions: fullPortions,
+          isFinished: true // Mantener como finalizado
+        })
+      });
 
       // Guardar peso si se proporcionó
       if (editingWeight && parseFloat(editingWeight) > 0) {
@@ -278,10 +332,22 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
           date: editingReport.date,
           notes: ''
         };
+        
         localStorage.setItem(
           `weight-${activeUserCode}-${editingReport.date}`, 
           JSON.stringify(weightData)
         );
+
+        // Guardar peso en la base de datos
+        await fetch('/api/weight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userCode: activeUserCode,
+            date: editingReport.date,
+            weight: weightData
+          })
+        });
       }
 
       // Recargar datos para actualizar el reporte
@@ -291,11 +357,11 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
       setIsEditingDay(false);
       setEditingReport(null);
       
-      alert('Día actualizado correctamente');
+      alert('✅ Día actualizado y guardado en la base de datos');
       
     } catch (error) {
       console.error('Error guardando cambios:', error);
-      alert('Error al guardar los cambios');
+      alert('Error al guardar los cambios. Verifica tu conexión.');
     }
   };
 
@@ -310,13 +376,13 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Reportes para Coach</h1>
-          <p className="text-gray-700">Comparte tu progreso nutricional con tu coach</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Historial Nutricional</h1>
+          <p className="text-gray-700">Revisa y edita tus días registrados • Envía reportes a tu coach</p>
         </div>
 
         {userProfile && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Configuración</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Configuración</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
@@ -360,7 +426,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
 
         {reports.length > 0 && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Resumen de {dateRange} días</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Resumen de {dateRange} días</h2>
             
             {/* Gráfico de Calidad Nutricional Promedio */}
             {(() => {
@@ -373,7 +439,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
 
                 return (
                   <div className="mb-6 p-4 bg-gray-100 rounded-lg">
-                    <h3 className="text-lg font-semibold mb-3">Calidad Nutricional Promedio</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-3">Calidad Nutricional Promedio</h3>
                     
                     {/* Barra de progreso tricolor */}
                     <div className="w-full bg-gray-200 rounded-full h-6 flex overflow-hidden mb-4">
@@ -402,21 +468,21 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
                       <div>
                         <div className="flex items-center justify-center mb-1">
                           <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                          <span className="text-sm font-medium">Comer Más</span>
+                          <span className="text-sm font-medium text-gray-900">Comer Más</span>
                         </div>
                         <div className="text-lg font-bold text-green-600">{avgComerMas}%</div>
                       </div>
                       <div>
                         <div className="flex items-center justify-center mb-1">
                           <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                          <span className="text-sm font-medium">Ocasionalmente</span>
+                          <span className="text-sm font-medium text-gray-900">Ocasionalmente</span>
                         </div>
                         <div className="text-lg font-bold text-yellow-600">{avgComerOcasionalmente}%</div>
                       </div>
                       <div>
                         <div className="flex items-center justify-center mb-1">
                           <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                          <span className="text-sm font-medium">Comer Menos</span>
+                          <span className="text-sm font-medium text-gray-900">Comer Menos</span>
                         </div>
                         <div className="text-lg font-bold text-red-600">{avgComerMenos}%</div>
                       </div>
@@ -448,13 +514,13 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
               <table className="min-w-full table-auto">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Fecha</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Peso</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Proteína</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Carbos</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Grasas</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Verduras</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Acciones</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Fecha</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Peso</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Proteína</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Carbos</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Grasas</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Verduras</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>

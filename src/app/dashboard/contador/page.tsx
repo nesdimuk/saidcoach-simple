@@ -59,6 +59,7 @@ export default function ContadorPorciones() {
   const [dailyWeight, setDailyWeight] = useState<DailyWeight | null>(null);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
   const [tempWeight, setTempWeight] = useState('');
+  const [isDayFinished, setIsDayFinished] = useState(false);
 
   // Cargar datos del localStorage al iniciar
   useEffect(() => {
@@ -75,6 +76,7 @@ export default function ContadorPorciones() {
     const savedGoals = localStorage.getItem(`daily-goals-${activeUserCode}`);
     const savedProfile = localStorage.getItem(`user-profile-${activeUserCode}`);
     const savedWeight = localStorage.getItem(`weight-${activeUserCode}-${today}`);
+    const savedFinished = localStorage.getItem(`day-finished-${activeUserCode}-${today}`);
     
     if (savedData) {
       setPortionCount(JSON.parse(savedData));
@@ -82,6 +84,10 @@ export default function ContadorPorciones() {
     
     if (savedWeight) {
       setDailyWeight(JSON.parse(savedWeight));
+    }
+    
+    if (savedFinished) {
+      setIsDayFinished(JSON.parse(savedFinished));
     }
     
     if (savedProfile) {
@@ -121,10 +127,10 @@ export default function ContadorPorciones() {
     }
   }, []);
 
-  // Guardar en API y localStorage cada vez que cambia
+  // Guardar en API y localStorage cada vez que cambia (solo si el día no está finalizado)
   useEffect(() => {
     const activeUserCode = localStorage.getItem('active-user-code');
-    if (activeUserCode) {
+    if (activeUserCode && !isDayFinished) {
       const today = new Date().toDateString();
       
       // Guardar en localStorage como backup
@@ -143,7 +149,7 @@ export default function ContadorPorciones() {
         console.error('Error guardando porciones en API:', error);
       });
     }
-  }, [portionCount]);
+  }, [portionCount, isDayFinished]);
 
   const addPortion = (type: 'P' | 'C' | 'G' | 'V', subtype?: string, amount: number = 1) => {
     setPortionCount(prev => {
@@ -200,52 +206,55 @@ export default function ContadorPorciones() {
     count: number, 
     icon: string 
   }) => (
-    <div className="flex flex-col items-center space-y-3 p-3 bg-gray-100 rounded-lg">
+    <div className={`flex flex-col items-center space-y-3 p-3 rounded-lg ${isDayFinished ? 'bg-gray-50 opacity-60' : 'bg-gray-100'}`}>
       {/* Ícono principal - Click para +1 porción */}
       <div className="relative">
         <button
-          onClick={() => addPortion(type, subtype, 1)}
-          className="hover:scale-105 transition-transform active:scale-95"
+          onClick={() => !isDayFinished && addPortion(type, subtype, 1)}
+          className={`transition-transform ${isDayFinished ? 'cursor-not-allowed' : 'hover:scale-105 active:scale-95'}`}
+          disabled={isDayFinished}
         >
           <Image 
             src={`/icons/${icon}.png`} 
             alt={icon}
             width={50}
             height={50}
-            className="w-12 h-12 cursor-pointer"
+            className={`w-12 h-12 ${isDayFinished ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           />
         </button>
         {count > 0 && (
-          <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium">
+          <div className={`absolute -top-2 -right-2 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-medium ${isDayFinished ? 'bg-gray-400' : 'bg-blue-600'}`}>
             {count % 1 === 0 ? count : count.toFixed(1)}
           </div>
         )}
       </div>
       
       {/* Controles secundarios */}
-      <div className="flex items-center justify-center gap-2">
-        {/* Media porción (solo para P y C) */}
-        {(type === 'P' || type === 'C') && (
-          <button
-            onClick={() => addPortion(type, subtype, 0.5)}
-            className="bg-green-100 hover:bg-green-200 text-green-700 px-2 py-1 rounded-md text-xs font-medium transition-colors"
-            title="Agregar media porción"
-          >
-            +0.5
-          </button>
-        )}
-        
-        {/* Botón deshacer */}
-        {count > 0 && (
-          <button
-            onClick={() => removePortion(type, subtype, count >= 1 ? 1 : 0.5)}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1 rounded-md text-sm transition-colors"
-            title="Deshacer última acción"
-          >
-            ↶
-          </button>
-        )}
-      </div>
+      {!isDayFinished && (
+        <div className="flex items-center justify-center gap-2">
+          {/* Media porción (solo para P y C) */}
+          {(type === 'P' || type === 'C') && (
+            <button
+              onClick={() => addPortion(type, subtype, 0.5)}
+              className="bg-green-100 hover:bg-green-200 text-green-700 px-2 py-1 rounded-md text-xs font-medium transition-colors"
+              title="Agregar media porción"
+            >
+              +0.5
+            </button>
+          )}
+          
+          {/* Botón deshacer */}
+          {count > 0 && (
+            <button
+              onClick={() => removePortion(type, subtype, count >= 1 ? 1 : 0.5)}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 p-1 rounded-md text-sm transition-colors"
+              title="Deshacer última acción"
+            >
+              ↶
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -256,7 +265,60 @@ export default function ContadorPorciones() {
       G: { G1: 0, G2: 0, G3: 0 },
       V: 0
     });
+    setIsDayFinished(false);
+    
+    // Limpiar también del localStorage
+    const activeUserCode = localStorage.getItem('active-user-code');
+    const today = new Date().toDateString();
+    if (activeUserCode) {
+      localStorage.removeItem(`day-finished-${activeUserCode}-${today}`);
+    }
   };
+
+  const finishDay = async () => {
+    const confirmed = confirm(
+      '¿Finalizar y guardar este día?\n\n' +
+      '✅ Se guardará en tu historial personal\n' +
+      '📊 Aparecerá en los reportes para tu coach\n' +
+      '🔒 Se marcará como día completado\n\n' +
+      '💡 Después podrás usar "Editar Día" o "Reiniciar Día".'
+    );
+    
+    if (!confirmed) return;
+    
+    const activeUserCode = localStorage.getItem('active-user-code');
+    const today = new Date().toDateString();
+    
+    if (activeUserCode) {
+      try {
+        // Marcar día como finalizado
+        setIsDayFinished(true);
+        localStorage.setItem(`day-finished-${activeUserCode}-${today}`, JSON.stringify(true));
+        
+        // Guardar estado final en la base de datos
+        await fetch('/api/portions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userCode: activeUserCode,
+            date: today,
+            portions: portionCount,
+            isFinished: true
+          })
+        });
+        
+        // Ya no reseteamos automáticamente - el usuario puede ver sus datos finalizados
+        alert('✅ Día guardado en tu historial.\n\n💡 Usa "Editar Día" si necesitas cambios o "Reiniciar Día" para empezar mañana.');
+        
+      } catch (error) {
+        console.error('Error finalizando el día:', error);
+        alert('Error al finalizar el día. Inténtalo nuevamente.');
+        setIsDayFinished(false);
+        localStorage.removeItem(`day-finished-${activeUserCode}-${today}`);
+      }
+    }
+  };
+
 
   const handleEditGoals = () => {
     setIsEditingGoals(true);
@@ -395,7 +457,7 @@ export default function ContadorPorciones() {
         {/* Resumen diario */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-semibold">Progreso del Día</h2>
+            <h2 className="text-2xl font-semibold text-gray-800">Progreso del Día</h2>
             {userProfile && (
               <div className="flex space-x-2">
                 <button
@@ -433,25 +495,25 @@ export default function ContadorPorciones() {
               <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(getTotalPortions('P'), dailyGoals.P)}`}>
                 {getTotalPortions('P') % 1 === 0 ? getTotalPortions('P') : getTotalPortions('P').toFixed(1)}/{dailyGoals.P}
               </div>
-              <div className="text-sm text-gray-700">Proteína</div>
+              <div className="text-sm text-gray-800">Proteína</div>
             </div>
             <div className="text-center py-2">
               <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(getTotalPortions('C'), dailyGoals.C)}`}>
                 {getTotalPortions('C') % 1 === 0 ? getTotalPortions('C') : getTotalPortions('C').toFixed(1)}/{dailyGoals.C}
               </div>
-              <div className="text-xs sm:text-sm text-gray-700">Carbohidratos</div>
+              <div className="text-xs sm:text-sm text-gray-800">Carbohidratos</div>
             </div>
             <div className="text-center py-2">
               <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(getTotalPortions('G'), dailyGoals.G)}`}>
                 {getTotalPortions('G') % 1 === 0 ? getTotalPortions('G') : getTotalPortions('G').toFixed(1)}/{dailyGoals.G}
               </div>
-              <div className="text-sm text-gray-700">Grasas</div>
+              <div className="text-sm text-gray-800">Grasas</div>
             </div>
             <div className="text-center py-2">
               <div className={`text-xl sm:text-2xl font-bold ${getProgressColor(portionCount.V, dailyGoals.V)}`}>
                 {portionCount.V % 1 === 0 ? portionCount.V : portionCount.V.toFixed(1)}/{dailyGoals.V}
               </div>
-              <div className="text-sm text-gray-700">Verduras</div>
+              <div className="text-sm text-gray-800">Verduras</div>
             </div>
             <div className="text-center py-2">
               <div className="text-xl sm:text-2xl font-bold text-indigo-600">
@@ -472,16 +534,16 @@ export default function ContadorPorciones() {
 
         {/* Gráfico de Calidad Nutricional */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-semibold mb-4">Calidad Nutricional del Día</h2>
-          <p className="text-gray-600 text-sm mb-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Calidad Nutricional del Día</h2>
+          <p className="text-gray-700 text-sm mb-6">
             Distribución según categorías de Precision Nutrition
           </p>
           
           {/* Barra de progreso visual */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">Calidad de alimentos consumidos</span>
-              <span className="text-sm text-gray-700">
+              <span className="text-sm font-medium text-gray-900">Calidad de alimentos consumidos</span>
+              <span className="text-sm text-gray-900">
                 {getTotalPortions('P') + getTotalPortions('C') + getTotalPortions('G')} porciones totales
               </span>
             </div>
@@ -514,12 +576,12 @@ export default function ContadorPorciones() {
             <div className="text-center py-2">
               <div className="flex items-center justify-center mb-2">
                 <div className="w-4 h-4 bg-green-500 rounded-full mr-2"></div>
-                <span className="text-sm font-medium">Comer Más</span>
+                <span className="text-sm font-medium text-gray-900">Comer Más</span>
               </div>
               <div className="text-2xl font-bold text-green-600">
                 {qualityPercentages.comerMas}%
               </div>
-              <div className="text-xs text-gray-700 mt-1">
+              <div className="text-xs text-gray-800 mt-1">
                 P1: {portionCount.P.P1} | C1: {portionCount.C.C1} | G1: {portionCount.G.G1}
               </div>
             </div>
@@ -527,12 +589,12 @@ export default function ContadorPorciones() {
             <div className="text-center py-2">
               <div className="flex items-center justify-center mb-2">
                 <div className="w-4 h-4 bg-yellow-500 rounded-full mr-2"></div>
-                <span className="text-sm font-medium">Comer Ocasionalmente</span>
+                <span className="text-sm font-medium text-gray-900">Comer Ocasionalmente</span>
               </div>
               <div className="text-2xl font-bold text-yellow-600">
                 {qualityPercentages.comerOcasionalmente}%
               </div>
-              <div className="text-xs text-gray-700 mt-1">
+              <div className="text-xs text-gray-800 mt-1">
                 P2: {portionCount.P.P2} | C2: {portionCount.C.C2} | G2: {portionCount.G.G2}
               </div>
             </div>
@@ -540,12 +602,12 @@ export default function ContadorPorciones() {
             <div className="text-center py-2">
               <div className="flex items-center justify-center mb-2">
                 <div className="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
-                <span className="text-sm font-medium">Comer Menos</span>
+                <span className="text-sm font-medium text-gray-900">Comer Menos</span>
               </div>
               <div className="text-2xl font-bold text-red-600">
                 {qualityPercentages.comerMenos}%
               </div>
-              <div className="text-xs text-gray-700 mt-1">
+              <div className="text-xs text-gray-800 mt-1">
                 P3: {portionCount.P.P3} | C3: {portionCount.C.C3} | G3: {portionCount.G.G3}
               </div>
             </div>
@@ -553,7 +615,7 @@ export default function ContadorPorciones() {
 
           {/* Mensaje motivacional */}
           <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-            <div className="text-sm text-gray-800">
+            <div className="text-sm text-gray-900">
               {qualityPercentages.comerMas >= 70 ? (
                 <span className="text-green-700 font-medium">
                   🎉 ¡Excelente! Más del 70% de tus alimentos son de alta calidad.
@@ -661,27 +723,51 @@ export default function ContadorPorciones() {
           </div>
         </div>
 
+        {/* Estado del día */}
+        {isDayFinished && (
+          <div className="mt-8 mb-4 p-4 bg-green-100 border border-green-300 rounded-lg text-center">
+            <div className="text-green-800 font-semibold mb-2">
+              ✅ Día Finalizado y Guardado
+            </div>
+            <div className="text-green-700 text-sm mb-3">
+              Este día está registrado en tu historial con los datos que ves arriba. 
+            </div>
+            <div className="text-green-600 text-xs">
+              💡 Ve al "Historial" para editarlo o usa "Reiniciar Día" para empezar mañana
+            </div>
+          </div>
+        )}
+
         {/* Botones de acción */}
         <div className="mt-8 text-center space-x-4 flex flex-wrap justify-center gap-4">
-          <button
-            onClick={resetDay}
-            className="bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
-          >
-            Reiniciar Día
-          </button>
+          {!isDayFinished ? (
+            <button
+              onClick={finishDay}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+            >
+              ✅ Finalizar Día
+            </button>
+          ) : (
+            <button
+              onClick={resetDay}
+              className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+            >
+              🗑️ Reiniciar Día
+            </button>
+          )}
           
           {userProfile && (
             <a 
               href="/dashboard/reportes"
-              className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
             >
-              📊 Reportes para Coach
+              📚 Historial
             </a>
           )}
           
           <a 
             href="/dashboard"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
           >
             Volver al Dashboard
           </a>

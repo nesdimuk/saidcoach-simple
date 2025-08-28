@@ -29,16 +29,27 @@ export async function POST(request) {
     const body = await request.json();
     const { userCode, profile } = body;
     
+    console.log('📝 Intentando guardar perfil:', { userCode, profile });
+    
     if (!userCode || !profile) {
+      console.log('❌ Datos faltantes:', { userCode: !!userCode, profile: !!profile });
       return NextResponse.json({ error: 'userCode and profile required' }, { status: 400 });
     }
 
     const redis = await getRedisClient();
-    await redis.set(`user-profile-${userCode}`, JSON.stringify(profile));
+    const key = `user-profile-${userCode}`;
+    const value = JSON.stringify(profile);
     
-    return NextResponse.json({ success: true });
+    console.log('💾 Guardando en Redis:', { key, value });
+    await redis.set(key, value);
+    
+    // Verificar que se guardó
+    const saved = await redis.get(key);
+    console.log('✅ Verificación de guardado:', { saved });
+    
+    return NextResponse.json({ success: true, saved: !!saved });
   } catch (error) {
-    console.error('Error saving user profile:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('❌ Error saving user profile:', error);
+    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 });
   }
 }

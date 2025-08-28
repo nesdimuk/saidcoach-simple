@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { calculatePersonalizedNutrition } from '@/lib/metabolismCalculator';
 
 interface UserData {
@@ -47,6 +47,68 @@ export default function Dashboard() {
 
   const [result, setResult] = useState<NutritionResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+  // Cargar datos del usuario al iniciar
+  useEffect(() => {
+    const loadUserData = async () => {
+      const activeUserCode = localStorage.getItem('active-user-code');
+      if (!activeUserCode) {
+        return;
+      }
+
+      try {
+        // Intentar cargar desde la API primero
+        const response = await fetch(`/api/user-profile?userCode=${activeUserCode}`);
+        const data = await response.json();
+        
+        if (data.profile) {
+          // Convertir el perfil guardado al formato del formulario
+          const profile = data.profile;
+          
+          // También necesitamos los datos básicos (edad, peso, altura)
+          const savedFormData = localStorage.getItem(`user-form-data-${activeUserCode}`);
+          const formData = savedFormData ? JSON.parse(savedFormData) : {};
+          
+          setUserData({
+            name: profile.name || '',
+            age: formData.age || '',
+            weight: formData.weight || '',
+            height: formData.height || '',
+            gender: profile.gender || '',
+            activity: profile.activity || '',
+            goal: profile.goal || '',
+            preference: profile.preference || ''
+          });
+          
+          // Si tenemos todos los datos, calcular el plan automáticamente
+          if (profile.name && formData.age && formData.weight && formData.height) {
+            const nutrition = calculatePersonalizedNutrition({
+              name: profile.name,
+              age: formData.age,
+              weight: formData.weight,
+              height: formData.height,
+              gender: profile.gender,
+              activity: profile.activity,
+              goal: profile.goal,
+              preference: profile.preference
+            });
+            setResult(nutrition as NutritionResult);
+            setIsEditingProfile(false);
+          } else {
+            setIsEditingProfile(true); // Mostrar formulario si faltan datos
+          }
+        } else {
+          setIsEditingProfile(true); // Nuevo usuario
+        }
+      } catch (error) {
+        console.error('Error cargando datos del usuario:', error);
+        setIsEditingProfile(true);
+      }
+    };
+
+    loadUserData();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -63,7 +125,7 @@ export default function Dashboard() {
 
     try {
       const nutrition = calculatePersonalizedNutrition(userData as Required<UserData>);
-      setResult(nutrition);
+      setResult(nutrition as NutritionResult);
       
       // Obtener código de usuario activo
       const activeUserCode = localStorage.getItem('active-user-code');
@@ -98,11 +160,20 @@ export default function Dashboard() {
       // También mantener en localStorage como backup local
       localStorage.setItem(`user-profile-${activeUserCode}`, JSON.stringify(userProfile));
       
+      // Guardar también los datos del formulario completo
+      localStorage.setItem(`user-form-data-${activeUserCode}`, JSON.stringify({
+        age: userData.age,
+        weight: userData.weight,
+        height: userData.height
+      }));
+      
       // Si es un nuevo usuario, limpiar objetivos personalizados anteriores
       if (isNewUser) {
         localStorage.removeItem(`daily-goals-${activeUserCode}`);
         console.log('Nuevo usuario detectado - objetivos reseteados');
       }
+      
+      setIsEditingProfile(false);
       
     } catch (error) {
       console.error('Error:', error);
@@ -123,9 +194,20 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Formulario */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-2xl font-semibold mb-6">Datos Personales</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold">Datos Personales</h2>
+              {result && !isEditingProfile && (
+                <button
+                  onClick={() => setIsEditingProfile(true)}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                >
+                  ✏️ Editar
+                </button>
+              )}
+            </div>
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            {!result || isEditingProfile ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nombre
@@ -267,6 +349,29 @@ export default function Dashboard() {
                 {loading ? 'Calculando...' : 'Calcular Plan Personalizado'}
               </button>
             </form>
+            ) : (
+              <div className="space-y-4 text-gray-700">
+                <div><strong>Nombre:</strong> {userData.name}</div>
+                <div><strong>Edad:</strong> {userData.age} años</div>
+                <div><strong>Peso:</strong> {userData.weight} kg</div>
+                <div><strong>Altura:</strong> {userData.height} cm</div>
+                <div><strong>Género:</strong> {userData.gender === 'MALE' ? 'Hombre' : 'Mujer'}</div>
+                <div><strong>Actividad:</strong> {
+                  userData.activity === 'SEDENTARY' ? 'Sedentario' :
+                  userData.activity === 'LIGHT' ? 'Ligero' :
+                  userData.activity === 'MODERATE' ? 'Moderado' :
+                  userData.activity === 'ACTIVE' ? 'Activo' : 'Muy Activo'
+                }</div>
+                <div><strong>Objetivo:</strong> {
+                  userData.goal === 'WEIGHT_LOSS' ? 'Pérdida de Peso' :
+                  userData.goal === 'MAINTENANCE' ? 'Mantenimiento' : 'Ganancia Muscular'
+                }</div>
+                <div><strong>Preferencia:</strong> {
+                  userData.preference === 'carbohidratos' ? 'Más Carbohidratos' :
+                  userData.preference === 'grasas' ? 'Más Grasas' : 'Equilibrado'
+                }</div>
+              </div>
+            )}
           </div>
 
           {/* Resultados */}

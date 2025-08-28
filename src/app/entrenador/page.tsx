@@ -186,7 +186,7 @@ export default function EntrenadorPage() {
           </h2>
           
           {clients.length === 0 ? (
-            <div className="text-center py-8 text-gray-700">
+            <div className="text-center py-8 text-gray-800">
               <p>No hay clientes registrados aún.</p>
               <p className="text-sm">Los clientes aparecerán aquí cuando usen sus códigos de acceso.</p>
             </div>
@@ -210,7 +210,7 @@ export default function EntrenadorPage() {
                       <td className="px-4 py-3">
                         <div>
                           <div className="font-medium">{client.profile.name}</div>
-                          <div className="text-sm text-gray-700">
+                          <div className="text-sm text-gray-800">
                             {client.profile.gender === 'MALE' ? 'Hombre' : 'Mujer'} • {client.profile.activity}
                           </div>
                         </div>
