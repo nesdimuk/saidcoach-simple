@@ -232,10 +232,10 @@ export default function EntrenadorPage() {
                       </td>
                       <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-1 text-xs">
-                          <span className="bg-red-100 text-red-800 px-1 rounded">P:{client.recentCompliance.P}%</span>
-                          <span className="bg-yellow-100 text-yellow-800 px-1 rounded">C:{client.recentCompliance.C}%</span>
-                          <span className="bg-purple-100 text-purple-800 px-1 rounded">G:{client.recentCompliance.G}%</span>
-                          <span className="bg-green-100 text-green-800 px-1 rounded">V:{client.recentCompliance.V}%</span>
+                          <span className="bg-red-100 text-red-900 px-1 rounded font-semibold">P:{client.recentCompliance.P}%</span>
+                          <span className="bg-yellow-100 text-yellow-900 px-1 rounded font-semibold">C:{client.recentCompliance.C}%</span>
+                          <span className="bg-purple-100 text-purple-900 px-1 rounded font-semibold">G:{client.recentCompliance.G}%</span>
+                          <span className="bg-green-100 text-green-900 px-1 rounded font-semibold">V:{client.recentCompliance.V}%</span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-center">

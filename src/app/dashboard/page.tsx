@@ -350,26 +350,26 @@ export default function Dashboard() {
               </button>
             </form>
             ) : (
-              <div className="space-y-4 text-gray-700">
-                <div><strong>Nombre:</strong> {userData.name}</div>
-                <div><strong>Edad:</strong> {userData.age} años</div>
-                <div><strong>Peso:</strong> {userData.weight} kg</div>
-                <div><strong>Altura:</strong> {userData.height} cm</div>
-                <div><strong>Género:</strong> {userData.gender === 'MALE' ? 'Hombre' : 'Mujer'}</div>
-                <div><strong>Actividad:</strong> {
+              <div className="space-y-4 text-gray-900">
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Nombre:</strong> <span className="font-medium">{userData.name}</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Edad:</strong> <span className="font-medium">{userData.age} años</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Peso:</strong> <span className="font-medium">{userData.weight} kg</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Altura:</strong> <span className="font-medium">{userData.height} cm</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Género:</strong> <span className="font-medium">{userData.gender === 'MALE' ? 'Hombre' : 'Mujer'}</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Actividad:</strong> <span className="font-medium">{
                   userData.activity === 'SEDENTARY' ? 'Sedentario' :
                   userData.activity === 'LIGHT' ? 'Ligero' :
                   userData.activity === 'MODERATE' ? 'Moderado' :
                   userData.activity === 'ACTIVE' ? 'Activo' : 'Muy Activo'
-                }</div>
-                <div><strong>Objetivo:</strong> {
+                }</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Objetivo:</strong> <span className="font-medium">{
                   userData.goal === 'WEIGHT_LOSS' ? 'Pérdida de Peso' :
                   userData.goal === 'MAINTENANCE' ? 'Mantenimiento' : 'Ganancia Muscular'
-                }</div>
-                <div><strong>Preferencia:</strong> {
+                }</span></div>
+                <div className="p-3 bg-gray-50 rounded-lg"><strong className="text-gray-800">Preferencia:</strong> <span className="font-medium">{
                   userData.preference === 'carbohidratos' ? 'Más Carbohidratos' :
                   userData.preference === 'grasas' ? 'Más Grasas' : 'Equilibrado'
-                }</div>
+                }</span></div>
               </div>
             )}
           </div>

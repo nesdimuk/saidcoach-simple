@@ -114,9 +114,9 @@ export default function ClientDetailPage() {
   };
 
   const getComplianceColor = (percentage: number) => {
-    if (percentage >= 90) return 'text-green-800 bg-green-100';
-    if (percentage >= 70) return 'text-yellow-800 bg-yellow-100';
-    return 'text-red-800 bg-red-100';
+    if (percentage >= 90) return 'text-green-900 bg-green-100 font-semibold';
+    if (percentage >= 70) return 'text-yellow-900 bg-yellow-100 font-semibold';
+    return 'text-red-900 bg-red-100 font-semibold';
   };
 
   const calculateAverages = () => {
@@ -169,7 +169,7 @@ export default function ClientDetailPage() {
             </p>
           </div>
           <div className="text-right">
-            <code className="bg-gray-100 px-3 py-1 rounded text-sm">{userCode}</code>
+            <code className="bg-gray-100 px-3 py-1 rounded text-sm text-gray-900 font-semibold">{userCode}</code>
           </div>
         </div>
 
@@ -230,13 +230,13 @@ export default function ClientDetailPage() {
               <table className="min-w-full table-auto">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Fecha</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Peso</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Proteína</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Carbos</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Grasas</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Verduras</th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Promedio</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Fecha</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Peso</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Proteína</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Carbos</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Grasas</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Verduras</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Promedio</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -250,29 +250,29 @@ export default function ClientDetailPage() {
                         <td className="px-4 py-2 text-sm text-gray-900">
                           {new Date(report.date).toLocaleDateString('es-ES')}
                         </td>
-                        <td className="px-4 py-2 text-center text-sm">
+                        <td className="px-4 py-2 text-center text-sm text-gray-900 font-medium">
                           {report.weight ? `${report.weight} kg` : '-'}
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div>{report.portions.P.toFixed(1)}/{report.goals.P}</div>
+                          <div className="text-gray-900 font-medium">{report.portions.P.toFixed(1)}/{report.goals.P}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.P)}`}>
                             {report.compliance.P}%
                           </div>
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div>{report.portions.C.toFixed(1)}/{report.goals.C}</div>
+                          <div className="text-gray-900 font-medium">{report.portions.C.toFixed(1)}/{report.goals.C}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.C)}`}>
                             {report.compliance.C}%
                           </div>
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div>{report.portions.G.toFixed(1)}/{report.goals.G}</div>
+                          <div className="text-gray-900 font-medium">{report.portions.G.toFixed(1)}/{report.goals.G}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.G)}`}>
                             {report.compliance.G}%
                           </div>
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div>{report.portions.V.toFixed(1)}/{report.goals.V}</div>
+                          <div className="text-gray-900 font-medium">{report.portions.V.toFixed(1)}/{report.goals.V}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.V)}`}>
                             {report.compliance.V}%
                           </div>
