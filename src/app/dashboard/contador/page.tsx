@@ -121,12 +121,27 @@ export default function ContadorPorciones() {
     }
   }, []);
 
-  // Guardar en localStorage cada vez que cambia
+  // Guardar en API y localStorage cada vez que cambia
   useEffect(() => {
     const activeUserCode = localStorage.getItem('active-user-code');
     if (activeUserCode) {
       const today = new Date().toDateString();
+      
+      // Guardar en localStorage como backup
       localStorage.setItem(`portions-${activeUserCode}-${today}`, JSON.stringify(portionCount));
+      
+      // Guardar en la base de datos
+      fetch('/api/portions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userCode: activeUserCode,
+          date: today,
+          portions: portionCount
+        })
+      }).catch(error => {
+        console.error('Error guardando porciones en API:', error);
+      });
     }
   }, [portionCount]);
 
@@ -247,11 +262,28 @@ export default function ContadorPorciones() {
     setIsEditingGoals(true);
   };
 
-  const handleSaveGoals = () => {
+  const handleSaveGoals = async () => {
     const activeUserCode = localStorage.getItem('active-user-code');
     if (activeUserCode) {
       setDailyGoals(tempGoals);
+      
+      // Guardar en localStorage como backup
       localStorage.setItem(`daily-goals-${activeUserCode}`, JSON.stringify(tempGoals));
+      
+      // Guardar en la base de datos
+      try {
+        await fetch('/api/goals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userCode: activeUserCode,
+            goals: tempGoals
+          })
+        });
+      } catch (error) {
+        console.error('Error guardando objetivos en API:', error);
+      }
+      
       setIsEditingGoals(false);
     }
   };
@@ -273,7 +305,7 @@ export default function ContadorPorciones() {
     setIsEditingWeight(true);
   };
 
-  const handleSaveWeight = () => {
+  const handleSaveWeight = async () => {
     const activeUserCode = localStorage.getItem('active-user-code');
     const weight = parseFloat(tempWeight);
     if (weight && weight > 0 && activeUserCode) {
@@ -285,7 +317,25 @@ export default function ContadorPorciones() {
       };
       
       setDailyWeight(weightData);
+      
+      // Guardar en localStorage como backup
       localStorage.setItem(`weight-${activeUserCode}-${today}`, JSON.stringify(weightData));
+      
+      // Guardar en la base de datos
+      try {
+        await fetch('/api/weight', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userCode: activeUserCode,
+            date: today,
+            weight: weightData
+          })
+        });
+      } catch (error) {
+        console.error('Error guardando peso en API:', error);
+      }
+      
       setIsEditingWeight(false);
       setTempWeight('');
     }

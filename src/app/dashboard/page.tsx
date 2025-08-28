@@ -83,9 +83,19 @@ export default function Dashboard() {
       };
       
       // Verificar si es un nuevo usuario (perfil diferente)
-      const savedProfile = localStorage.getItem(`user-profile-${activeUserCode}`);
-      const isNewUser = !savedProfile || JSON.stringify(JSON.parse(savedProfile)) !== JSON.stringify(userProfile);
+      const profileResponse = await fetch(`/api/user-profile?userCode=${activeUserCode}`);
+      const profileData = await profileResponse.json();
+      const savedProfile = profileData.profile;
+      const isNewUser = !savedProfile || JSON.stringify(savedProfile) !== JSON.stringify(userProfile);
       
+      // Guardar perfil en la base de datos
+      await fetch('/api/user-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userCode: activeUserCode, profile: userProfile })
+      });
+      
+      // También mantener en localStorage como backup local
       localStorage.setItem(`user-profile-${activeUserCode}`, JSON.stringify(userProfile));
       
       // Si es un nuevo usuario, limpiar objetivos personalizados anteriores
