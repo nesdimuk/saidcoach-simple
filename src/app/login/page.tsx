@@ -66,12 +66,12 @@ export default function LoginPage() {
                 type="text"
                 value={userCode}
                 onChange={(e) => setUserCode(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-lg font-mono uppercase"
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-lg font-mono uppercase text-black font-bold placeholder-gray-400"
                 placeholder="Ej: SAID-ANA-2024"
                 required
                 autoFocus
               />
-              <p className="text-xs text-gray-700 mt-1">
+              <p className="text-xs text-gray-800 mt-1 font-medium">
                 Ingresa el código que te proporcionó tu entrenador
               </p>
             </div>
