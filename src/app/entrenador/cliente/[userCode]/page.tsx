@@ -119,6 +119,15 @@ export default function ClientDetailPage() {
     return 'text-red-900 bg-red-100 font-semibold';
   };
 
+  const formatPortion = (value: number) => {
+    // Si es entero, mostrar sin decimales
+    if (value % 1 === 0) {
+      return value.toString();
+    }
+    // Si tiene decimales, mostrar con 1 decimal
+    return value.toFixed(1);
+  };
+
   const calculateAverages = () => {
     if (reports.length === 0) return { compliance: { P: 0, C: 0, G: 0, V: 0 }, weightChange: 0 };
 
@@ -254,25 +263,25 @@ export default function ClientDetailPage() {
                           {report.weight ? `${report.weight} kg` : '-'}
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div className="text-gray-900 font-medium">{report.portions.P.toFixed(1)}/{report.goals.P}</div>
+                          <div className="text-gray-900 font-medium">{formatPortion(report.portions.P)}/{report.goals.P}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.P)}`}>
                             {report.compliance.P}%
                           </div>
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div className="text-gray-900 font-medium">{report.portions.C.toFixed(1)}/{report.goals.C}</div>
+                          <div className="text-gray-900 font-medium">{formatPortion(report.portions.C)}/{report.goals.C}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.C)}`}>
                             {report.compliance.C}%
                           </div>
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div className="text-gray-900 font-medium">{report.portions.G.toFixed(1)}/{report.goals.G}</div>
+                          <div className="text-gray-900 font-medium">{formatPortion(report.portions.G)}/{report.goals.G}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.G)}`}>
                             {report.compliance.G}%
                           </div>
                         </td>
                         <td className="px-4 py-2 text-center text-sm">
-                          <div className="text-gray-900 font-medium">{report.portions.V.toFixed(1)}/{report.goals.V}</div>
+                          <div className="text-gray-900 font-medium">{formatPortion(report.portions.V)}/{report.goals.V}</div>
                           <div className={`text-xs px-2 py-1 rounded ${getComplianceColor(report.compliance.V)}`}>
                             {report.compliance.V}%
                           </div>
