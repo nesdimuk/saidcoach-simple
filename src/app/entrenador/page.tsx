@@ -70,125 +70,28 @@ export default function EntrenadorPage() {
     }
   };
 
-  const loadClientsData = () => {
-    console.log('🔍 [DEBUG] Iniciando loadClientsData...');
-    console.log('🔍 [DEBUG] localStorage.length:', localStorage.length);
+  const loadClientsData = async () => {
+    console.log('🔍 [DEBUG] Cargando clientes desde API...');
     
-    const clientsData: ClientData[] = [];
-    const allKeys: string[] = [];
-    
-    // Primero, listar todas las keys de localStorage para debugging
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        allKeys.push(key);
+    try {
+      const response = await fetch('/api/trainer/clients');
+      const data = await response.json();
+      
+      if (data.clients) {
+        console.log('🔍 [DEBUG] Clientes encontrados:', data.clients.length);
+        console.log('🔍 [DEBUG] Datos de clientes:', data.clients);
+        setClients(data.clients);
+      } else {
+        console.error('❌ [ERROR] No se pudieron cargar los clientes:', data.error);
+        setClients([]);
       }
+    } catch (error) {
+      console.error('❌ [ERROR] Error cargando clientes:', error);
+      setClients([]);
     }
-    
-    console.log('🔍 [DEBUG] Todas las keys en localStorage:', allKeys);
-    console.log('🔍 [DEBUG] Keys que empiezan con "user-profile-":', allKeys.filter(k => k.startsWith('user-profile-')));
-    
-    // Buscar todos los perfiles de usuarios en localStorage
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('user-profile-')) {
-        console.log('🔍 [DEBUG] Encontrado perfil:', key);
-        const userCode = key.replace('user-profile-', '');
-        const profileData = localStorage.getItem(key);
-        
-        if (profileData) {
-          try {
-            const profile = JSON.parse(profileData);
-            console.log('🔍 [DEBUG] Perfil parseado para', userCode, ':', profile);
-            
-            // Calcular estadísticas del cliente
-            const stats = calculateClientStats(userCode);
-            console.log('🔍 [DEBUG] Stats para', userCode, ':', stats);
-            
-            clientsData.push({
-              userCode,
-              profile,
-              lastActivity: stats.lastActivity,
-              totalDays: stats.totalDays,
-              recentCompliance: stats.recentCompliance
-            });
-          } catch (error) {
-            console.error('❌ [ERROR] Error parsing profile for', userCode, error);
-          }
-        }
-      }
-    }
-    
-    console.log('🔍 [DEBUG] Clientes encontrados:', clientsData.length);
-    console.log('🔍 [DEBUG] Datos de clientes:', clientsData);
-    
-    setClients(clientsData.sort((a, b) => a.profile.name.localeCompare(b.profile.name)));
   };
 
-  const calculateClientStats = (userCode: string) => {
-    console.log('📊 [DEBUG] Calculando stats para:', userCode);
-    let totalDays = 0;
-    let lastActivity = 'Nunca';
-    let recentCompliance = { P: 0, C: 0, G: 0, V: 0 };
-    
-    // Buscar datos de los últimos 7 días
-    const recentData: Array<{P: number; C: number; G: number; V: number}> = [];
-    const today = new Date();
-    
-    for (let i = 0; i < 30; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const dateString = date.toDateString();
-      
-      const portionsKey = `portions-${userCode}-${dateString}`;
-      const portionsData = localStorage.getItem(portionsKey);
-      
-      if (portionsData && i === 0) {
-        console.log('📊 [DEBUG] Ejemplo de key buscada:', portionsKey);
-        console.log('📊 [DEBUG] Datos encontrados para hoy:', portionsData);
-      }
-      
-      if (portionsData) {
-        totalDays++;
-        if (i === 0 || lastActivity === 'Nunca') {
-          lastActivity = date.toLocaleDateString('es-ES');
-        }
-        
-        if (i < 7) { // Solo últimos 7 días para compliance
-          try {
-            const portions = JSON.parse(portionsData);
-            const goals = JSON.parse(localStorage.getItem(`daily-goals-${userCode}`) || '{"P":5,"C":5,"G":5,"V":5}');
-            
-            const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-            const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-            const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-            const totalV = portions.V || 0;
-            
-            recentData.push({
-              P: Math.min((totalP / goals.P) * 100, 100),
-              C: Math.min((totalC / goals.C) * 100, 100),
-              G: Math.min((totalG / goals.G) * 100, 100),
-              V: Math.min((totalV / goals.V) * 100, 100)
-            });
-          } catch (error) {
-            console.error('Error calculating stats for', userCode, error);
-          }
-        }
-      }
-    }
-    
-    // Promediar compliance de los últimos 7 días
-    if (recentData.length > 0) {
-      recentCompliance = {
-        P: Math.round(recentData.reduce((sum, data) => sum + data.P, 0) / recentData.length),
-        C: Math.round(recentData.reduce((sum, data) => sum + data.C, 0) / recentData.length),
-        G: Math.round(recentData.reduce((sum, data) => sum + data.G, 0) / recentData.length),
-        V: Math.round(recentData.reduce((sum, data) => sum + data.V, 0) / recentData.length)
-      };
-    }
-    
-    return { totalDays, lastActivity, recentCompliance };
-  };
+  // Función eliminada - los stats ahora se calculan en la API
 
   const viewClientReport = (userCode: string) => {
     localStorage.setItem('viewing-client', userCode);
