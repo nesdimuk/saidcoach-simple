@@ -202,10 +202,10 @@ CALIDAD NUTRICIONAL PROMEDIO:
 - Comer Menos (P3/C3/G3): ${avgQuality.comerMenos}%
 
 ${avgQuality.comerMas >= 70 ? 
-'🎉 EXCELENTE calidad nutricional promedio' : 
+'EXCELENTE calidad nutricional promedio' : 
 avgQuality.comerMas >= 50 ? 
-'👍 BUENA calidad, con oportunidad de mejora' : 
-'💪 ENFOQUE en mejorar la calidad de los alimentos'}
+'BUENA calidad, con oportunidad de mejora' : 
+'ENFOQUE en mejorar la calidad de los alimentos'}
 
 CAMBIO DE PESO: ${weightChange > 0 ? '+' : ''}${weightChange.toFixed(1)} kg
 
@@ -357,7 +357,7 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
       setIsEditingDay(false);
       setEditingReport(null);
       
-      alert('✅ Día actualizado y guardado en la base de datos');
+      alert('Día actualizado y guardado en la base de datos');
       
     } catch (error) {
       console.error('Error guardando cambios:', error);
@@ -376,8 +376,8 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Historial Nutricional</h1>
-          <p className="text-gray-700">Revisa y edita tus días registrados • Envía reportes a tu coach</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">Historial Nutricional</h1>
+          <p className="text-gray-700 text-lg">Revisa y edita tus días registrados</p>
         </div>
 
         {userProfile && (
@@ -417,9 +417,9 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
             <button
               onClick={handleSendReport}
               disabled={isSending || !coachEmail}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
             >
-              {isSending ? 'Preparando...' : '📧 Enviar Reporte al Coach'}
+              {isSending ? 'Preparando...' : 'Enviar Reporte al Coach'}
             </button>
           </div>
         )}
@@ -492,15 +492,15 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
                     <div className="mt-4 text-center">
                       {avgComerMas >= 70 ? (
                         <span className="text-green-700 font-medium text-sm">
-                          🎉 Excelente calidad nutricional promedio
+                          Excelente calidad nutricional promedio
                         </span>
                       ) : avgComerMas >= 50 ? (
                         <span className="text-yellow-700 font-medium text-sm">
-                          👍 Buena calidad, con oportunidad de mejora
+                          Buena calidad, con oportunidad de mejora
                         </span>
                       ) : (
                         <span className="text-red-700 font-medium text-sm">
-                          💪 Enfoque en mejorar la calidad de los alimentos
+                          Enfoque en mejorar la calidad de los alimentos
                         </span>
                       )}
                     </div>
@@ -529,29 +529,29 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
                       <td className="px-4 py-2 text-sm text-gray-900">
                         {new Date(report.date).toLocaleDateString('es-ES')}
                       </td>
-                      <td className="px-4 py-2 text-center text-sm">
+                      <td className="px-4 py-2 text-center text-sm text-gray-900 font-medium">
                         {report.weight ? `${report.weight} kg` : '-'}
                       </td>
                       <td className="px-4 py-2 text-center text-sm">
-                        <div>{report.portions.P}/{report.goals.P}</div>
+                        <div className="text-gray-900 font-medium">{report.portions.P}/{report.goals.P}</div>
                         <div className={`text-xs ${getComplianceColor(report.compliance.P)}`}>
                           {report.compliance.P}%
                         </div>
                       </td>
                       <td className="px-4 py-2 text-center text-sm">
-                        <div>{report.portions.C}/{report.goals.C}</div>
+                        <div className="text-gray-900 font-medium">{report.portions.C}/{report.goals.C}</div>
                         <div className={`text-xs ${getComplianceColor(report.compliance.C)}`}>
                           {report.compliance.C}%
                         </div>
                       </td>
                       <td className="px-4 py-2 text-center text-sm">
-                        <div>{report.portions.G}/{report.goals.G}</div>
+                        <div className="text-gray-900 font-medium">{report.portions.G}/{report.goals.G}</div>
                         <div className={`text-xs ${getComplianceColor(report.compliance.G)}`}>
                           {report.compliance.G}%
                         </div>
                       </td>
                       <td className="px-4 py-2 text-center text-sm">
-                        <div>{report.portions.V}/{report.goals.V}</div>
+                        <div className="text-gray-900 font-medium">{report.portions.V}/{report.goals.V}</div>
                         <div className={`text-xs ${getComplianceColor(report.compliance.V)}`}>
                           {report.compliance.V}%
                         </div>
@@ -559,9 +559,9 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
                       <td className="px-4 py-2 text-center text-sm">
                         <button
                           onClick={() => handleEditDay(report)}
-                          className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
+                          className="bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
                         >
-                          📝 Editar
+                          Editar
                         </button>
                       </td>
                     </tr>
@@ -575,16 +575,16 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
         <div className="text-center">
           <a 
             href="/dashboard/contador"
-            className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+            className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            ← Volver al Contador
+            Volver al Contador
           </a>
         </div>
 
         {/* Modal de edición de día */}
         {isEditingDay && editingReport && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
               <h3 className="text-xl font-semibold mb-4">
                 Editar día {new Date(editingReport.date).toLocaleDateString('es-ES')}
               </h3>
@@ -674,13 +674,13 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
               <div className="flex space-x-4 mt-6">
                 <button
                   onClick={handleSaveEditDay}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
-                  💾 Guardar Cambios
+                  Guardar Cambios
                 </button>
                 <button
                   onClick={handleCancelEditDay}
-                  className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-700 transition-colors"
+                  className="flex-1 bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   Cancelar
                 </button>

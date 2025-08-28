@@ -278,8 +278,8 @@ export default function ContadorPorciones() {
   const finishDay = async () => {
     const confirmed = confirm(
       '¿Finalizar y guardar este día?\n\n' +
-      '✅ Se guardará en tu historial personal\n' +
-      '📊 Aparecerá en los reportes para tu coach\n' +
+      'Se guardará en tu historial personal\n' +
+      'Aparecerá en los reportes para tu coach\n' +
       '🔒 Se marcará como día completado\n\n' +
       '💡 Después podrás usar "Editar Día" o "Reiniciar Día".'
     );
@@ -308,7 +308,7 @@ export default function ContadorPorciones() {
         });
         
         // Ya no reseteamos automáticamente - el usuario puede ver sus datos finalizados
-        alert('✅ Día guardado en tu historial.\n\n💡 Usa "Editar Día" si necesitas cambios o "Reiniciar Día" para empezar mañana.');
+        alert('Día guardado en tu historial.\n\nUsa "Editar Día" si necesitas cambios o "Reiniciar Día" para empezar mañana.');
         
       } catch (error) {
         console.error('Error finalizando el día:', error);
@@ -464,7 +464,7 @@ export default function ContadorPorciones() {
                   onClick={handleEditGoals}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
                 >
-                  ✏️ Personalizar Objetivos
+                  Personalizar Objetivos
                 </button>
                 <button
                   onClick={handleChangeUser}
@@ -525,7 +525,7 @@ export default function ContadorPorciones() {
                   onClick={handleEditWeight}
                   className="ml-1 text-blue-600 hover:text-blue-800 text-xs"
                 >
-                  ✏️
+                  Editar
                 </button>
               </div>
             </div>
@@ -618,15 +618,15 @@ export default function ContadorPorciones() {
             <div className="text-sm text-gray-900">
               {qualityPercentages.comerMas >= 70 ? (
                 <span className="text-green-700 font-medium">
-                  🎉 ¡Excelente! Más del 70% de tus alimentos son de alta calidad.
+                  ¡Excelente! Más del 70% de tus alimentos son de alta calidad.
                 </span>
               ) : qualityPercentages.comerMas >= 50 ? (
                 <span className="text-yellow-700 font-medium">
-                  👍 Buen trabajo. Trata de aumentar los alimentos &quot;Comer Más&quot; (P1, C1, G1).
+                  Buen trabajo. Trata de aumentar los alimentos &quot;Comer Más&quot; (P1, C1, G1).
                 </span>
               ) : (
                 <span className="text-red-700 font-medium">
-                  💪 Oportunidad de mejora. Intenta elegir más alimentos de alta calidad (P1, C1, G1).
+                  Oportunidad de mejora. Intenta elegir más alimentos de alta calidad (P1, C1, G1).
                 </span>
               )}
             </div>
@@ -637,7 +637,7 @@ export default function ContadorPorciones() {
         <div className="space-y-6">
           {/* Proteínas */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-semibold mb-4 text-red-600">🖐️ Proteínas (Palmas)</h3>
+            <h3 className="text-xl font-semibold mb-4 text-red-600">Proteínas (Palmas)</h3>
             <div className="grid grid-cols-3 gap-4">
               <PortionButton 
                 type="P" 
@@ -687,7 +687,7 @@ export default function ContadorPorciones() {
 
           {/* Grasas */}
           <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-semibold mb-4 text-purple-600">👍 Grasas (Pulgares)</h3>
+            <h3 className="text-xl font-semibold mb-4 text-purple-600">Grasas (Pulgares)</h3>
             <div className="grid grid-cols-3 gap-4">
               <PortionButton 
                 type="G" 
@@ -727,7 +727,7 @@ export default function ContadorPorciones() {
         {isDayFinished && (
           <div className="mt-8 mb-4 p-4 bg-green-100 border border-green-300 rounded-lg text-center">
             <div className="text-green-800 font-semibold mb-2">
-              ✅ Día Finalizado y Guardado
+              Día Finalizado y Guardado
             </div>
             <div className="text-green-700 text-sm mb-3">
               Este día está registrado en tu historial con los datos que ves arriba. 
@@ -745,14 +745,14 @@ export default function ContadorPorciones() {
               onClick={finishDay}
               className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
             >
-              ✅ Finalizar Día
+              Finalizar Día
             </button>
           ) : (
             <button
               onClick={resetDay}
               className="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition-colors"
             >
-              🗑️ Reiniciar Día
+              Reiniciar Día
             </button>
           )}
           

@@ -201,7 +201,7 @@ export default function Dashboard() {
                   onClick={() => setIsEditingProfile(true)}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
                 >
-                  ✏️ Editar
+                  Editar
                 </button>
               )}
             </div>
@@ -433,7 +433,7 @@ export default function Dashboard() {
                     href="/dashboard/contador"
                     className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors"
                   >
-                    📊 Contador de Porciones Diario
+                    Contador de Porciones Diario
                   </a>
                 </div>
               </div>
