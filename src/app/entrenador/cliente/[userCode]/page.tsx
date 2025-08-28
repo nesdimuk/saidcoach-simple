@@ -120,11 +120,11 @@ export default function ClientDetailPage() {
   };
 
   const formatPortion = (value: number) => {
-    // Si es entero, mostrar sin decimales
-    if (value % 1 === 0) {
-      return value.toString();
+    // Si es entero (4.0), mostrar como 4
+    if (Number.isInteger(value)) {
+      return Math.round(value).toString();
     }
-    // Si tiene decimales, mostrar con 1 decimal
+    // Si tiene decimales (4.5), mostrar con 1 decimal
     return value.toFixed(1);
   };
 
