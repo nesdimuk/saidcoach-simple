@@ -35,11 +35,17 @@ export default function EntrenadorPage() {
   const TRAINER_CODE = 'SAIDCOACH2024';
 
   useEffect(() => {
+    console.log('🚀 [DEBUG] useEffect iniciado');
     // Verificar autenticación en el cliente
     const isTrainerAuthenticated = localStorage.getItem('trainer-authenticated');
     setIsAuthenticated(!!isTrainerAuthenticated);
+    console.log('🚀 [DEBUG] Autenticación verificada:', !!isTrainerAuthenticated);
     
-    loadClientsData();
+    if (isTrainerAuthenticated) {
+      console.log('🚀 [DEBUG] Cargando datos de clientes...');
+      loadClientsData();
+    }
+    
     // Generar código inicial solo en el cliente
     generateNewCodeHandler();
     
@@ -55,29 +61,49 @@ export default function EntrenadorPage() {
   const handleTrainerLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (trainerCode === TRAINER_CODE) {
+      console.log('✅ [DEBUG] Login exitoso, cargando clientes...');
       setIsAuthenticated(true);
       localStorage.setItem('trainer-authenticated', 'true');
+      loadClientsData();
     } else {
       alert('Código de entrenador incorrecto');
     }
   };
 
   const loadClientsData = () => {
+    console.log('🔍 [DEBUG] Iniciando loadClientsData...');
+    console.log('🔍 [DEBUG] localStorage.length:', localStorage.length);
+    
     const clientsData: ClientData[] = [];
+    const allKeys: string[] = [];
+    
+    // Primero, listar todas las keys de localStorage para debugging
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        allKeys.push(key);
+      }
+    }
+    
+    console.log('🔍 [DEBUG] Todas las keys en localStorage:', allKeys);
+    console.log('🔍 [DEBUG] Keys que empiezan con "user-profile-":', allKeys.filter(k => k.startsWith('user-profile-')));
     
     // Buscar todos los perfiles de usuarios en localStorage
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('user-profile-')) {
+        console.log('🔍 [DEBUG] Encontrado perfil:', key);
         const userCode = key.replace('user-profile-', '');
         const profileData = localStorage.getItem(key);
         
         if (profileData) {
           try {
             const profile = JSON.parse(profileData);
+            console.log('🔍 [DEBUG] Perfil parseado para', userCode, ':', profile);
             
             // Calcular estadísticas del cliente
             const stats = calculateClientStats(userCode);
+            console.log('🔍 [DEBUG] Stats para', userCode, ':', stats);
             
             clientsData.push({
               userCode,
@@ -87,16 +113,20 @@ export default function EntrenadorPage() {
               recentCompliance: stats.recentCompliance
             });
           } catch (error) {
-            console.error('Error parsing profile for', userCode, error);
+            console.error('❌ [ERROR] Error parsing profile for', userCode, error);
           }
         }
       }
     }
     
+    console.log('🔍 [DEBUG] Clientes encontrados:', clientsData.length);
+    console.log('🔍 [DEBUG] Datos de clientes:', clientsData);
+    
     setClients(clientsData.sort((a, b) => a.profile.name.localeCompare(b.profile.name)));
   };
 
   const calculateClientStats = (userCode: string) => {
+    console.log('📊 [DEBUG] Calculando stats para:', userCode);
     let totalDays = 0;
     let lastActivity = 'Nunca';
     let recentCompliance = { P: 0, C: 0, G: 0, V: 0 };
@@ -112,6 +142,11 @@ export default function EntrenadorPage() {
       
       const portionsKey = `portions-${userCode}-${dateString}`;
       const portionsData = localStorage.getItem(portionsKey);
+      
+      if (portionsData && i === 0) {
+        console.log('📊 [DEBUG] Ejemplo de key buscada:', portionsKey);
+        console.log('📊 [DEBUG] Datos encontrados para hoy:', portionsData);
+      }
       
       if (portionsData) {
         totalDays++;
