@@ -68,7 +68,7 @@ export default function HistorialPage() {
     loadUserProfile();
   }, [dateRange]);
 
-  const loadUserProfile = () => {
+  const loadUserProfile = async () => {
     const activeUserCode = localStorage.getItem('active-user-code');
     if (!activeUserCode) {
       alert('Error: No se encontró código de usuario. Redirigiendo al login...');
@@ -76,81 +76,109 @@ export default function HistorialPage() {
       return;
     }
 
-    const savedProfile = localStorage.getItem(`user-profile-${activeUserCode}`);
-    if (savedProfile) {
-      setUserProfile(JSON.parse(savedProfile));
+    try {
+      // Cargar perfil desde API Redis
+      const response = await fetch(`/api/user-profile?userCode=${activeUserCode}`);
+      const data = await response.json();
+      
+      if (data.profile) {
+        setUserProfile(data.profile);
+      } else {
+        console.log('No se encontró perfil para el usuario:', activeUserCode);
+        // Fallback a localStorage si no hay datos en Redis
+        const savedProfile = localStorage.getItem(`user-profile-${activeUserCode}`);
+        if (savedProfile) {
+          setUserProfile(JSON.parse(savedProfile));
+        }
+      }
+    } catch (error) {
+      console.error('Error cargando perfil de usuario:', error);
+      // Fallback a localStorage en caso de error
+      const savedProfile = localStorage.getItem(`user-profile-${activeUserCode}`);
+      if (savedProfile) {
+        setUserProfile(JSON.parse(savedProfile));
+      }
     }
   };
 
-  const loadReportsData = () => {
+  const loadReportsData = async () => {
     const activeUserCode = localStorage.getItem('active-user-code');
     if (!activeUserCode) {
       setReports([]);
       return;
     }
 
-    const reportsData: DailyReport[] = [];
-    const today = new Date();
-    
-    for (let i = 0; i < dateRange; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const dateString = date.toDateString();
+    try {
+      const reportsData: DailyReport[] = [];
+      const today = new Date();
       
-      // Cargar datos del día usando el código de usuario
-      const portionsData = localStorage.getItem(`portions-${activeUserCode}-${dateString}`);
-      const weightData = localStorage.getItem(`weight-${activeUserCode}-${dateString}`);
-      const goalsData = localStorage.getItem(`daily-goals-${activeUserCode}`);
-      
-      if (portionsData) {
-        const portions = JSON.parse(portionsData);
-        const weight = weightData ? JSON.parse(weightData).weight : undefined;
-        const goals = goalsData ? JSON.parse(goalsData) : { P: 5, C: 5, G: 5, V: 5 };
+      for (let i = 0; i < dateRange; i++) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const dateString = date.toDateString();
         
-        // Calcular totales consumidos
-        const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-        const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-        const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
-        const totalV = portions.V || 0;
-        
-        // Calcular compliance (% del objetivo alcanzado)
-        const compliance = {
-          P: Math.round((totalP / goals.P) * 100),
-          C: Math.round((totalC / goals.C) * 100),
-          G: Math.round((totalG / goals.G) * 100),
-          V: Math.round((totalV / goals.V) * 100)
-        };
+        try {
+          // Cargar datos desde API Redis
+          const portionsResponse = await fetch(`/api/portions?userCode=${activeUserCode}&date=${encodeURIComponent(dateString)}`);
+          const portionsResult = await portionsResponse.json();
+          
+          if (portionsResult.portions) {
+            const portions = portionsResult.portions;
+            const weight = portionsResult.weight;
+            const goals = portionsResult.goals || { P: 5, C: 5, G: 5, V: 5 };
+            
+            // Calcular totales consumidos
+            const totalP = Object.values(portions.P).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalC = Object.values(portions.C).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalG = Object.values(portions.G).reduce((sum: number, val: unknown) => sum + (val as number), 0);
+            const totalV = portions.V || 0;
+            
+            // Calcular compliance (% del objetivo alcanzado)
+            const compliance = {
+              P: Math.round((totalP / goals.P) * 100),
+              C: Math.round((totalC / goals.C) * 100),
+              G: Math.round((totalG / goals.G) * 100),
+              V: Math.round((totalV / goals.V) * 100)
+            };
 
-        // Calcular calidad nutricional
-        const detailed = {
-          P1: portions.P.P1 || 0, P2: portions.P.P2 || 0, P3: portions.P.P3 || 0,
-          C1: portions.C.C1 || 0, C2: portions.C.C2 || 0, C3: portions.C.C3 || 0,
-          G1: portions.G.G1 || 0, G2: portions.G.G2 || 0, G3: portions.G.G3 || 0
-        };
+            // Calcular calidad nutricional
+            const detailed = {
+              P1: portions.P.P1 || 0, P2: portions.P.P2 || 0, P3: portions.P.P3 || 0,
+              C1: portions.C.C1 || 0, C2: portions.C.C2 || 0, C3: portions.C.C3 || 0,
+              G1: portions.G.G1 || 0, G2: portions.G.G2 || 0, G3: portions.G.G3 || 0
+            };
 
-        const totalQualityPortions = totalP + totalC + totalG;
-        const quality = totalQualityPortions > 0 ? {
-          comerMas: Math.round(((detailed.P1 + detailed.C1 + detailed.G1) / totalQualityPortions) * 100),
-          comerOcasionalmente: Math.round(((detailed.P2 + detailed.C2 + detailed.G2) / totalQualityPortions) * 100),
-          comerMenos: Math.round(((detailed.P3 + detailed.C3 + detailed.G3) / totalQualityPortions) * 100),
-          detailed
-        } : {
-          comerMas: 0, comerOcasionalmente: 0, comerMenos: 0, detailed
-        };
-        
-        reportsData.push({
-          date: dateString,
-          weight,
-          portions: { P: totalP, C: totalC, G: totalG, V: totalV },
-          originalPortions: portions, // Preservar datos originales detallados
-          goals,
-          compliance,
-          quality
-        });
+            const totalQualityPortions = totalP + totalC + totalG;
+            const quality = totalQualityPortions > 0 ? {
+              comerMas: Math.round(((detailed.P1 + detailed.C1 + detailed.G1) / totalQualityPortions) * 100),
+              comerOcasionalmente: Math.round(((detailed.P2 + detailed.C2 + detailed.G2) / totalQualityPortions) * 100),
+              comerMenos: Math.round(((detailed.P3 + detailed.C3 + detailed.G3) / totalQualityPortions) * 100),
+              detailed
+            } : {
+              comerMas: 0, comerOcasionalmente: 0, comerMenos: 0, detailed
+            };
+            
+            reportsData.push({
+              date: dateString,
+              weight,
+              portions: { P: totalP, C: totalC, G: totalG, V: totalV },
+              originalPortions: portions, // Preservar datos originales detallados
+              goals,
+              compliance,
+              quality
+            });
+          }
+        } catch (error) {
+          console.log(`No hay datos para ${dateString}:`, error);
+        }
       }
+      
+      setReports(reportsData);
+      
+    } catch (error) {
+      console.error('Error cargando reportes:', error);
+      setReports([]);
     }
-    
-    setReports(reportsData);
   };
 
   const getComplianceColor = (percentage: number) => {
