@@ -369,7 +369,7 @@ export default function Dashboard() {
           {/* Resultados */}
           {result && (
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-semibold mb-6">Tu Plan Nutricional</h2>
+              <h2 className="text-2xl font-semibold mb-6 text-gray-900">Tu Plan Nutricional</h2>
               
               <div className="space-y-6">
                 {/* Métricas principales */}
@@ -390,7 +390,7 @@ export default function Dashboard() {
 
                 {/* Porciones de mano */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Porciones Diarias (Método de la Mano)</h3>
+                  <h3 className="text-lg font-semibold mb-3 text-gray-900">Porciones Diarias (Método de la Mano)</h3>
                   <div className="grid grid-cols-4 gap-3">
                     <div className="text-center p-3 bg-red-100 rounded-lg">
                       <div className="text-xl font-bold text-red-800">
