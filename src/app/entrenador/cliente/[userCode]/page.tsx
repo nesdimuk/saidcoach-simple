@@ -145,6 +145,31 @@ export default function ClientDetailPage() {
     return { compliance: avgCompliance, weightChange };
   };
 
+  const handleDeleteRecord = async (clientCode: string, date: string) => {
+    const confirmDelete = confirm(
+      `¿Estás seguro de que deseas eliminar el registro del ${new Date(date).toLocaleDateString('es-ES')} para ${userProfile?.name}?\n\nEsta acción no se puede deshacer.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/portions?userCode=${clientCode}&date=${encodeURIComponent(date)}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        // Recargar datos para actualizar la vista
+        await loadClientData(clientCode);
+        alert('Registro eliminado exitosamente');
+      } else {
+        throw new Error('Error al eliminar el registro');
+      }
+    } catch (error) {
+      console.error('Error eliminando registro:', error);
+      alert('Error al eliminar el registro. Intenta de nuevo.');
+    }
+  };
+
   const averages = calculateAverages();
 
   if (!userProfile) {
@@ -246,6 +271,7 @@ export default function ClientDetailPage() {
                     <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Grasas</th>
                     <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Verduras</th>
                     <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Promedio</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -290,6 +316,14 @@ export default function ClientDetailPage() {
                           <div className={`font-semibold px-2 py-1 rounded ${getComplianceColor(avgCompliance)}`}>
                             {avgCompliance}%
                           </div>
+                        </td>
+                        <td className="px-4 py-2 text-center text-sm">
+                          <button
+                            onClick={() => handleDeleteRecord(userCode as string, report.date)}
+                            className="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-red-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                          >
+                            Eliminar
+                          </button>
                         </td>
                       </tr>
                     );

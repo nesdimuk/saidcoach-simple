@@ -400,6 +400,37 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
     setEditingWeight('');
   };
 
+  const handleDeleteDay = async (report: DailyReport) => {
+    const activeUserCode = localStorage.getItem('active-user-code');
+    if (!activeUserCode) {
+      alert('Error: No se encontró código de usuario.');
+      return;
+    }
+
+    const confirmDelete = confirm(
+      `¿Estás seguro de que deseas eliminar el registro del ${new Date(report.date).toLocaleDateString('es-ES')}?\n\nEsta acción no se puede deshacer.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`/api/portions?userCode=${activeUserCode}&date=${encodeURIComponent(report.date)}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        // Recargar datos para actualizar la vista
+        await loadReportsData();
+        alert('Registro eliminado exitosamente');
+      } else {
+        throw new Error('Error al eliminar el registro');
+      }
+    } catch (error) {
+      console.error('Error eliminando registro:', error);
+      alert('Error al eliminar el registro. Intenta de nuevo.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
@@ -585,12 +616,20 @@ Generado por SaidCoach - ${new Date().toLocaleDateString('es-ES')}
                         </div>
                       </td>
                       <td className="px-4 py-2 text-center text-sm">
-                        <button
-                          onClick={() => handleEditDay(report)}
-                          className="bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
-                        >
-                          Editar
-                        </button>
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handleEditDay(report)}
+                            className="bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDay(report)}
+                            className="bg-red-600 text-white px-3 py-1.5 rounded text-xs font-medium hover:bg-red-700 transition-all duration-200 shadow-sm hover:shadow-md"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

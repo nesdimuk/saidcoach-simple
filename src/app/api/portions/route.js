@@ -61,3 +61,39 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+// DELETE: Eliminar registro de un día específico
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userCode = searchParams.get('userCode');
+    const date = searchParams.get('date');
+    
+    if (!userCode || !date) {
+      return NextResponse.json({ error: 'userCode and date required' }, { status: 400 });
+    }
+
+    console.log('🗑️ Eliminando registro:', { userCode, date });
+
+    const redis = await getRedisClient();
+    
+    // Eliminar todos los datos relacionados con ese día
+    const keysToDelete = [
+      `portions-${userCode}-${date}`,
+      `day-finished-${userCode}-${date}`,
+      `weight-${userCode}-${date}`
+    ];
+    
+    for (const key of keysToDelete) {
+      await redis.del(key);
+      console.log(`🗑️ Eliminado: ${key}`);
+    }
+    
+    console.log('✅ Registro eliminado completamente');
+    return NextResponse.json({ success: true, message: 'Registro eliminado exitosamente' });
+    
+  } catch (error) {
+    console.error('Error deleting record:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
