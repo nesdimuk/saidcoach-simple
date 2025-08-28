@@ -195,13 +195,13 @@ export default function EntrenadorPage() {
               <table className="min-w-full table-auto">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-left">Cliente</th>
-                    <th className="px-4 py-2 text-left">Código</th>
-                    <th className="px-4 py-2 text-center">Objetivo</th>
-                    <th className="px-4 py-2 text-center">Última Actividad</th>
-                    <th className="px-4 py-2 text-center">Días Totales</th>
-                    <th className="px-4 py-2 text-center">Adherencia (7d)</th>
-                    <th className="px-4 py-2 text-center">Acciones</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Cliente</th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-900">Código</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Objetivo</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Última Actividad</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Días Totales</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Adherencia (7d)</th>
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-900">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -209,25 +209,25 @@ export default function EntrenadorPage() {
                     <tr key={client.userCode} className="border-b border-gray-200">
                       <td className="px-4 py-3">
                         <div>
-                          <div className="font-medium">{client.profile.name}</div>
-                          <div className="text-sm text-gray-800">
+                          <div className="font-medium text-gray-900">{client.profile.name}</div>
+                          <div className="text-sm text-gray-900">
                             {client.profile.gender === 'MALE' ? 'Hombre' : 'Mujer'} • {client.profile.activity}
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <code className="bg-gray-100 px-2 py-1 rounded text-xs">
+                        <code className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-900 font-medium">
                           {client.userCode}
                         </code>
                       </td>
-                      <td className="px-4 py-3 text-center text-sm">
+                      <td className="px-4 py-3 text-center text-sm text-gray-900 font-medium">
                         {client.profile.goal === 'WEIGHT_LOSS' ? 'Pérdida' : 
                          client.profile.goal === 'MAINTENANCE' ? 'Mantenimiento' : 'Ganancia'}
                       </td>
-                      <td className="px-4 py-3 text-center text-sm">
+                      <td className="px-4 py-3 text-center text-sm text-gray-900 font-medium">
                         {client.lastActivity}
                       </td>
-                      <td className="px-4 py-3 text-center font-medium">
+                      <td className="px-4 py-3 text-center font-medium text-gray-900">
                         {client.totalDays}
                       </td>
                       <td className="px-4 py-3 text-center">
