@@ -66,15 +66,11 @@ export default function Dashboard() {
           // Convertir el perfil guardado al formato del formulario
           const profile = data.profile;
           
-          // También necesitamos los datos básicos (edad, peso, altura)
-          const savedFormData = localStorage.getItem(`user-form-data-${activeUserCode}`);
-          const formData = savedFormData ? JSON.parse(savedFormData) : {};
-          
           setUserData({
             name: profile.name || '',
-            age: formData.age || '',
-            weight: formData.weight || '',
-            height: formData.height || '',
+            age: profile.age || '',
+            weight: profile.weight || '',
+            height: profile.height || '',
             gender: profile.gender || '',
             activity: profile.activity || '',
             goal: profile.goal || '',
@@ -82,12 +78,12 @@ export default function Dashboard() {
           });
           
           // Si tenemos todos los datos, calcular el plan automáticamente
-          if (profile.name && formData.age && formData.weight && formData.height) {
+          if (profile.name && profile.age && profile.weight && profile.height) {
             const nutrition = calculatePersonalizedNutrition({
               name: profile.name,
-              age: formData.age,
-              weight: formData.weight,
-              height: formData.height,
+              age: profile.age,
+              weight: profile.weight,
+              height: profile.height,
               gender: profile.gender,
               activity: profile.activity,
               goal: profile.goal,
@@ -135,9 +131,12 @@ export default function Dashboard() {
         return;
       }
 
-      // Guardar perfil de usuario para el contador con código
+      // Guardar perfil completo de usuario incluyendo datos básicos
       const userProfile = {
         name: userData.name,
+        age: userData.age,
+        weight: userData.weight,
+        height: userData.height,
         gender: userData.gender,
         goal: userData.goal,
         activity: userData.activity,
@@ -159,13 +158,6 @@ export default function Dashboard() {
       
       // También mantener en localStorage como backup local
       localStorage.setItem(`user-profile-${activeUserCode}`, JSON.stringify(userProfile));
-      
-      // Guardar también los datos del formulario completo
-      localStorage.setItem(`user-form-data-${activeUserCode}`, JSON.stringify({
-        age: userData.age,
-        weight: userData.weight,
-        height: userData.height
-      }));
       
       // Si es un nuevo usuario, limpiar objetivos personalizados anteriores
       if (isNewUser) {
@@ -195,7 +187,7 @@ export default function Dashboard() {
           {/* Formulario */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold">Datos Personales</h2>
+              <h2 className="text-2xl font-semibold text-gray-900">Datos Personales</h2>
               {result && !isEditingProfile && (
                 <button
                   onClick={() => setIsEditingProfile(true)}
@@ -209,7 +201,7 @@ export default function Dashboard() {
             {!result || isEditingProfile ? (
               <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Nombre
                 </label>
                 <input
@@ -224,7 +216,7 @@ export default function Dashboard() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Edad
                   </label>
                   <input
@@ -238,7 +230,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Peso (kg)
                   </label>
                   <input
@@ -253,7 +245,7 @@ export default function Dashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-900 mb-2">
                     Altura (cm)
                   </label>
                   <input
@@ -268,7 +260,7 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Género
                 </label>
                 <select
@@ -285,7 +277,7 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Nivel de Actividad
                 </label>
                 <select
@@ -305,7 +297,7 @@ export default function Dashboard() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   Objetivo
                 </label>
                 <select
@@ -324,7 +316,7 @@ export default function Dashboard() {
 
               {/* Preferencia Alimentaria */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-900 mb-2">
                   ¿Qué prefieres comer más?
                 </label>
                 <select
