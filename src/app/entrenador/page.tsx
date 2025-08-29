@@ -162,9 +162,9 @@ export default function EntrenadorPage() {
 
         {/* Generar nuevo código */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Generar Código para Nuevo Cliente</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">Generar Código para Nuevo Cliente</h2>
           <div className="flex items-center gap-4">
-            <code className="bg-gray-100 px-4 py-2 rounded-lg font-mono text-lg">
+            <code className="bg-gray-100 px-4 py-2 rounded-lg font-mono text-lg text-gray-900 font-bold">
               {generatedCode || 'Generando...'}
             </code>
             <button
@@ -174,14 +174,14 @@ export default function EntrenadorPage() {
               Generar Nuevo
             </button>
           </div>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-gray-800 mt-2">
             Proporciona este código a tu nuevo cliente para que pueda acceder al sistema.
           </p>
         </div>
 
         {/* Lista de clientes */}
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold mb-4">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">
             Clientes Activos ({clients.length})
           </h2>
           
