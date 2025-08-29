@@ -242,11 +242,11 @@ export default function ClientDetailPage() {
         {/* Configuración */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Período del Reporte</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Período del Reporte</h2>
             <select
               value={dateRange}
               onChange={(e) => setDateRange(parseInt(e.target.value))}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               <option value={7}>Últimos 7 días</option>
               <option value={14}>Últimos 14 días</option>
@@ -258,7 +258,7 @@ export default function ClientDetailPage() {
         {/* Tabla de datos diarios */}
         {reports.length > 0 && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Detalle Diario</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-900">Detalle Diario</h2>
             
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto">
